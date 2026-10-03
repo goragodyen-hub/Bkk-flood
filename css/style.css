@@ -6,7 +6,7 @@
   --bg-card-hover: rgba(26, 38, 68, 0.85);
   --border-subtle: rgba(255, 255, 255, 0.08);
   --border-glow: rgba(56, 189, 248, 0.25);
-  
+
   --text-primary: #f8fafc;
   --text-secondary: #94a3b8;
   --text-muted: #64748b;
@@ -32,13 +32,16 @@
   --shadow-glow-crimson: 0 0 30px rgba(239, 68, 68, 0.35);
 }
 
-*, *::before, *::after {
+*,
+*::before,
+*::after {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
 }
 
-html, body {
+html,
+body {
   background-color: var(--bg-deep);
   color: var(--text-primary);
   font-family: var(--font-main);
@@ -98,7 +101,8 @@ html, body {
   overflow-x: hidden;
 }
 
-.pro-detailed-view, .simple-mobile-view {
+.pro-detailed-view,
+.simple-mobile-view {
   width: 100%;
   max-width: 100%;
   min-width: 0;
@@ -252,8 +256,15 @@ html, body {
 }
 
 @keyframes pulse-ring-anim {
-  0% { transform: scale(1); opacity: 0.8; }
-  100% { transform: scale(1.35); opacity: 0; }
+  0% {
+    transform: scale(1);
+    opacity: 0.8;
+  }
+
+  100% {
+    transform: scale(1.35);
+    opacity: 0;
+  }
 }
 
 .title-group h1 {
@@ -311,8 +322,17 @@ html, body {
 }
 
 @keyframes blink {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50% { opacity: 0.4; transform: scale(0.85); }
+
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  50% {
+    opacity: 0.4;
+    transform: scale(0.85);
+  }
 }
 
 .btn-refresh {
@@ -342,7 +362,9 @@ html, body {
 }
 
 @keyframes spin {
-  100% { transform: rotate(360deg); }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 /* Metrics Ribbon */
@@ -387,10 +409,25 @@ html, body {
   flex-shrink: 0;
 }
 
-.icon-cyan { background: rgba(0, 242, 254, 0.15); color: var(--accent-cyan); }
-.icon-blue { background: rgba(56, 189, 248, 0.15); color: var(--accent-blue); }
-.icon-indigo { background: rgba(129, 140, 248, 0.15); color: var(--accent-indigo); }
-.icon-amber { background: rgba(245, 158, 11, 0.15); color: var(--accent-amber); }
+.icon-cyan {
+  background: rgba(0, 242, 254, 0.15);
+  color: var(--accent-cyan);
+}
+
+.icon-blue {
+  background: rgba(56, 189, 248, 0.15);
+  color: var(--accent-blue);
+}
+
+.icon-indigo {
+  background: rgba(129, 140, 248, 0.15);
+  color: var(--accent-indigo);
+}
+
+.icon-amber {
+  background: rgba(245, 158, 11, 0.15);
+  color: var(--accent-amber);
+}
 
 .metric-details {
   flex: 1;
@@ -709,9 +746,17 @@ html, body {
   transition: width 0.5s ease;
 }
 
-.bar-flow { background: var(--accent-cyan); }
-.bar-tide { background: var(--accent-indigo); }
-.bar-rain { background: var(--accent-amber); }
+.bar-flow {
+  background: var(--accent-cyan);
+}
+
+.bar-tide {
+  background: var(--accent-indigo);
+}
+
+.bar-rain {
+  background: var(--accent-amber);
+}
 
 .w-desc {
   font-size: 0.7rem;
@@ -838,9 +883,17 @@ html, body {
   border-radius: 50%;
 }
 
-.dot-normal { background: var(--accent-emerald); }
-.dot-warn { background: var(--accent-amber); }
-.dot-danger { background: var(--accent-crimson); }
+.dot-normal {
+  background: var(--accent-emerald);
+}
+
+.dot-warn {
+  background: var(--accent-amber);
+}
+
+.dot-danger {
+  background: var(--accent-crimson);
+}
 
 .map-wrapper {
   position: relative;
@@ -878,8 +931,17 @@ html, body {
 }
 
 @keyframes pulse-down {
-  0%, 100% { transform: translateY(0); opacity: 0.7; }
-  50% { transform: translateY(4px); opacity: 1; }
+
+  0%,
+  100% {
+    transform: translateY(0);
+    opacity: 0.7;
+  }
+
+  50% {
+    transform: translateY(4px);
+    opacity: 1;
+  }
 }
 
 /* Simulator Panel */
@@ -1002,10 +1064,25 @@ html, body {
   transform: scale(1.2);
 }
 
-.range-cyan::-webkit-slider-thumb { background: var(--accent-cyan); box-shadow: 0 0 10px var(--accent-cyan); }
-.range-blue::-webkit-slider-thumb { background: var(--accent-blue); box-shadow: 0 0 10px var(--accent-blue); }
-.range-indigo::-webkit-slider-thumb { background: var(--accent-indigo); box-shadow: 0 0 10px var(--accent-indigo); }
-.range-amber::-webkit-slider-thumb { background: var(--accent-amber); box-shadow: 0 0 10px var(--accent-amber); }
+.range-cyan::-webkit-slider-thumb {
+  background: var(--accent-cyan);
+  box-shadow: 0 0 10px var(--accent-cyan);
+}
+
+.range-blue::-webkit-slider-thumb {
+  background: var(--accent-blue);
+  box-shadow: 0 0 10px var(--accent-blue);
+}
+
+.range-indigo::-webkit-slider-thumb {
+  background: var(--accent-indigo);
+  box-shadow: 0 0 10px var(--accent-indigo);
+}
+
+.range-amber::-webkit-slider-thumb {
+  background: var(--accent-amber);
+  box-shadow: 0 0 10px var(--accent-amber);
+}
 
 .slider-limits {
   display: flex;
@@ -1238,14 +1315,38 @@ html, body {
 }
 
 /* Utility Classes */
-.text-cyan { color: var(--accent-cyan); }
-.text-blue { color: var(--accent-blue); }
-.text-indigo { color: var(--accent-indigo); }
-.text-emerald { color: var(--accent-emerald); }
-.text-amber { color: var(--accent-amber); }
-.text-danger { color: var(--accent-crimson); }
-.text-center { text-align: center; }
-.py-4 { padding-top: 1.5rem; padding-bottom: 1.5rem; }
+.text-cyan {
+  color: var(--accent-cyan);
+}
+
+.text-blue {
+  color: var(--accent-blue);
+}
+
+.text-indigo {
+  color: var(--accent-indigo);
+}
+
+.text-emerald {
+  color: var(--accent-emerald);
+}
+
+.text-amber {
+  color: var(--accent-amber);
+}
+
+.text-danger {
+  color: var(--accent-crimson);
+}
+
+.text-center {
+  text-align: center;
+}
+
+.py-4 {
+  padding-top: 1.5rem;
+  padding-bottom: 1.5rem;
+}
 
 /* Custom Leaflet Map Dark Styling */
 .leaflet-popup-content-wrapper {
@@ -1308,6 +1409,7 @@ html, body {
 body.mode-simple .simple-mobile-view {
   display: flex !important;
 }
+
 body.mode-simple .pro-detailed-view {
   display: none !important;
 }
@@ -1315,6 +1417,7 @@ body.mode-simple .pro-detailed-view {
 body.mode-pro .simple-mobile-view {
   display: none !important;
 }
+
 body.mode-pro .pro-detailed-view {
   display: block !important;
 }
@@ -1697,10 +1800,12 @@ body.mode-pro .pro-detailed-view {
   .main-dashboard-grid {
     grid-template-columns: 1fr;
   }
+
   .app-footer {
     grid-template-columns: 1fr;
     text-align: left;
   }
+
   .footer-credits {
     text-align: left;
   }
@@ -1711,37 +1816,45 @@ body.mode-pro .pro-detailed-view {
     padding: 14px;
     gap: 16px;
   }
+
   .app-header {
     flex-direction: column;
     align-items: stretch;
     gap: 14px;
     padding: 16px;
   }
+
   .header-left {
     justify-content: space-between;
   }
+
   .header-right {
     flex-direction: column;
     align-items: stretch;
     gap: 10px;
   }
+
   .view-mode-toggle {
     width: 100%;
     justify-content: center;
   }
+
   .btn-mode {
     flex: 1;
     justify-content: center;
     padding: 8px 10px;
   }
+
   .m-hotlines-row {
     grid-template-columns: 1fr;
   }
+
   .gauge-container {
     grid-template-columns: 1fr;
     justify-items: center;
     text-align: center;
   }
+
   .waters-grid {
     grid-template-columns: 1fr;
   }
@@ -1983,8 +2096,13 @@ body.mode-pro .pro-detailed-view {
   align-items: center;
 }
 
-.temp-max { color: var(--text-primary); }
-.temp-min { color: var(--text-muted); }
+.temp-max {
+  color: var(--text-primary);
+}
+
+.temp-min {
+  color: var(--text-muted);
+}
 
 .w-rain-bar-wrap {
   width: 100%;
@@ -2159,8 +2277,17 @@ body.mode-pro .pro-detailed-view {
 }
 
 @keyframes pulse-cctv {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50% { opacity: 0.4; transform: scale(1.2); }
+
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  50% {
+    opacity: 0.4;
+    transform: scale(1.2);
+  }
 }
 
 /* Embedded CCTV Live Player Box - Compact & Responsive */
@@ -2424,7 +2551,8 @@ body.mode-pro .pro-detailed-view {
   gap: 22px;
 }
 
-.nb-pro-left, .nb-pro-right {
+.nb-pro-left,
+.nb-pro-right {
   display: flex;
   flex-direction: column;
   gap: 14px;
@@ -2657,7 +2785,9 @@ body.mode-pro .pro-detailed-view {
 }
 
 @media (max-width: 768px) {
-  html, body {
+
+  html,
+  body {
     max-width: 100vw !important;
     overflow-x: hidden !important;
     position: relative !important;
@@ -3294,6 +3424,3 @@ body.mode-pro .pro-detailed-view {
     gap: 14px !important;
   }
 }
-
-
-
