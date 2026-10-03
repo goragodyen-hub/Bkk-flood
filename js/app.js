@@ -240,6 +240,11 @@ function renderDashboard(data) {
 
   // Update Prediction Hero Box
   renderPredictionAssessment(pred);
+
+  // Update Nonthaburi Bang Si Mueang & Bang Kruai Special Zone
+  if (data.nonthaburiZone) {
+    renderNonthaburiZone(data.nonthaburiZone);
+  }
 }
 
 // Render Prediction Assessment & Floodwall Visualizer
@@ -422,6 +427,112 @@ function renderSimpleMobileView(pred) {
   }
 }
 
+// Render Nonthaburi Bang Si Mueang & Bang Kruai Special Zone
+function renderNonthaburiZone(nb) {
+  if (!nb) return;
+
+  // 1. Mobile Simple View Elements
+  const mNbStatusBadge = document.getElementById('mNbStatusBadge');
+  const mNbSummary = document.getElementById('mNbSummary');
+  const mNbWatMsl = document.getElementById('mNbWatMsl');
+  const mNbWatBar = document.getElementById('mNbWatBar');
+  const mNbOmMsl = document.getElementById('mNbOmMsl');
+  const mNbOmBar = document.getElementById('mNbOmBar');
+  const mNbMahaMsl = document.getElementById('mNbMahaMsl');
+  const mNbMahaBar = document.getElementById('mNbMahaBar');
+
+  if (mNbStatusBadge && nb.riskBadge) {
+    mNbStatusBadge.textContent = nb.riskBadge;
+    if (nb.riskLevel === 'critical') {
+      mNbStatusBadge.style.color = '#ef4444';
+      mNbStatusBadge.style.borderColor = '#ef4444';
+      mNbStatusBadge.style.background = 'rgba(239, 68, 68, 0.15)';
+    } else if (nb.riskLevel === 'watch') {
+      mNbStatusBadge.style.color = '#f59e0b';
+      mNbStatusBadge.style.borderColor = '#f59e0b';
+      mNbStatusBadge.style.background = 'rgba(245, 158, 11, 0.15)';
+    } else {
+      mNbStatusBadge.style.color = '#10b981';
+      mNbStatusBadge.style.borderColor = '#10b981';
+      mNbStatusBadge.style.background = 'rgba(16, 185, 129, 0.15)';
+    }
+  }
+
+  if (mNbSummary && nb.riskSummary) {
+    mNbSummary.textContent = nb.riskSummary;
+  }
+
+  const watSt = nb.stations?.find(s => s.code === 'WAT_CHALOEM') || { waterlevelMsl: nb.watChaloemMsl || 2.18, bankMsl: 2.30 };
+  const omSt = nb.stations?.find(s => s.code === 'BKK007') || { waterlevelMsl: 1.43, bankMsl: 1.85, storagePercent: 90.7 };
+  const mahaSt = nb.stations?.find(s => s.code === 'BKK003') || { waterlevelMsl: 2.19, bankMsl: 2.07, storagePercent: 102.2 };
+  const nuanSt = nb.stations?.find(s => s.code === 'CPY014') || { waterlevelMsl: 2.49, bankMsl: 2.50 };
+
+  if (mNbWatMsl) mNbWatMsl.textContent = `+${Number(watSt.waterlevelMsl).toFixed(2)} ม.`;
+  if (mNbWatBar) mNbWatBar.style.width = `${Math.min(100, Math.round((watSt.waterlevelMsl / watSt.bankMsl) * 100))}%`;
+
+  if (mNbOmMsl) mNbOmMsl.textContent = `+${Number(omSt.waterlevelMsl).toFixed(2)} ม.`;
+  if (mNbOmBar) mNbOmBar.style.width = `${Math.min(100, Math.round((omSt.waterlevelMsl / omSt.bankMsl) * 100))}%`;
+
+  if (mNbMahaMsl) mNbMahaMsl.textContent = `+${Number(mahaSt.waterlevelMsl).toFixed(2)} ม.`;
+  if (mNbMahaBar) mNbMahaBar.style.width = `${Math.min(100, Math.round((mahaSt.waterlevelMsl / mahaSt.bankMsl) * 100))}%`;
+
+  // 2. Pro Detailed View Elements
+  const nbStatusPill = document.getElementById('nbStatusPill');
+  const nbWatMslPro = document.getElementById('nbWatMslPro');
+  const nbSummaryPro = document.getElementById('nbSummaryPro');
+
+  if (nbStatusPill) {
+    nbStatusPill.innerHTML = `<i class="fa-solid fa-triangle-exclamation"></i> ${nb.riskBadge || 'เฝ้าระวังน้ำหนุน'}`;
+  }
+  if (nbWatMslPro) nbWatMslPro.textContent = `+${Number(watSt.waterlevelMsl).toFixed(2)} ม. รทก.`;
+  if (nbSummaryPro && nb.riskSummary) nbSummaryPro.textContent = nb.riskSummary;
+
+  // Station Sub-table in Pro View
+  const nbWatVal = document.getElementById('nbWatVal');
+  const nbWatDiff = document.getElementById('nbWatDiff');
+  const nbWatBadge = document.getElementById('nbWatBadge');
+  if (nbWatVal) nbWatVal.textContent = `+${Number(watSt.waterlevelMsl).toFixed(2)} ม.`;
+  if (nbWatDiff) {
+    const diff = watSt.bankMsl - watSt.waterlevelMsl;
+    nbWatDiff.textContent = `${diff >= 0 ? '+' : ''}${diff.toFixed(2)} ม.`;
+    nbWatDiff.className = diff >= 0 ? 'text-amber font-mono' : 'text-crimson font-mono';
+  }
+  if (nbWatBadge && watSt.status) nbWatBadge.textContent = watSt.status;
+
+  const nbOmVal = document.getElementById('nbOmVal');
+  const nbOmDiff = document.getElementById('nbOmDiff');
+  const nbOmBadge = document.getElementById('nbOmBadge');
+  if (nbOmVal) nbOmVal.textContent = `+${Number(omSt.waterlevelMsl).toFixed(2)} ม.`;
+  if (nbOmDiff) {
+    const diff = omSt.bankMsl - omSt.waterlevelMsl;
+    nbOmDiff.textContent = `${diff >= 0 ? '+' : ''}${diff.toFixed(2)} ม.`;
+    nbOmDiff.className = diff >= 0 ? 'text-emerald font-mono' : 'text-crimson font-mono';
+  }
+  if (nbOmBadge && omSt.status) nbOmBadge.textContent = `${omSt.status} (จุ ${omSt.storagePercent || 90.7}%)`;
+
+  const nbMahaVal = document.getElementById('nbMahaVal');
+  const nbMahaDiff = document.getElementById('nbMahaDiff');
+  const nbMahaBadge = document.getElementById('nbMahaBadge');
+  if (nbMahaVal) nbMahaVal.textContent = `+${Number(mahaSt.waterlevelMsl).toFixed(2)} ม.`;
+  if (nbMahaDiff) {
+    const diff = mahaSt.bankMsl - mahaSt.waterlevelMsl;
+    nbMahaDiff.textContent = `${diff >= 0 ? '+' : ''}${diff.toFixed(2)} ม.`;
+    nbMahaDiff.className = diff >= 0 ? 'text-emerald font-mono' : 'text-crimson font-mono';
+  }
+  if (nbMahaBadge && mahaSt.status) nbMahaBadge.textContent = mahaSt.status;
+
+  const nbNuanVal = document.getElementById('nbNuanVal');
+  const nbNuanDiff = document.getElementById('nbNuanDiff');
+  const nbNuanBadge = document.getElementById('nbNuanBadge');
+  if (nbNuanVal) nbNuanVal.textContent = `+${Number(nuanSt.waterlevelMsl).toFixed(2)} ม.`;
+  if (nbNuanDiff) {
+    const diff = nuanSt.bankMsl - nuanSt.waterlevelMsl;
+    nbNuanDiff.textContent = `${diff >= 0 ? '+' : ''}${diff.toFixed(2)} ม.`;
+    nbNuanDiff.className = diff >= 0 ? 'text-emerald font-mono' : 'text-crimson font-mono';
+  }
+  if (nbNuanBadge && nuanSt.status) nbNuanBadge.textContent = nuanSt.status;
+}
+
 // 4. Render Map Markers for Hydrological Stations
 function renderMapStations(stations) {
   // Clear existing markers
@@ -489,6 +600,45 @@ function renderMapStations(stations) {
     marker.bindPopup(popupContent);
     state.stationMarkers.push(marker);
   });
+
+  // Add Wat Chaloem Phra Kiat & Bang Si Mueang Special Focus Pin
+  const chaloemPin = L.divIcon({
+    html: `
+      <div style="
+        background: #8b5cf6;
+        border: 2px solid #ffffff;
+        box-shadow: 0 0 14px #a855f7;
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 11px;
+      "><i class="fa-solid fa-location-dot"></i></div>
+    `,
+    className: 'custom-station-pin',
+    iconSize: [24, 24],
+    iconAnchor: [12, 12]
+  });
+  const chaloemMarker = L.marker([13.8294, 100.4906], { icon: chaloemPin }).addTo(state.map);
+  chaloemMarker.bindPopup(`
+    <div style="font-family: var(--font-main); min-width: 230px; padding: 4px;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+        <span style="background:rgba(139,92,246,0.2); color:#c084fc; padding:2px 8px; border-radius:6px; font-weight:700; font-size:12px;">จุดเฝ้าระวังพิเศษ</span>
+        <span style="color:#f59e0b; font-weight:600; font-size:12px;">เฝ้าระวังน้ำหนุน</span>
+      </div>
+      <div style="font-weight:700; font-size:14px; color:#ffffff; margin-bottom:2px;">วัดเฉลิมพระเกียรติฯ - บางศรีเมือง</div>
+      <div style="font-size:12px; color:#94a3b8; margin-bottom:8px;">อ.เมืองนนทบุรี - อ.บางกรวย (คลองอ้อมนนท์)</div>
+      <div style="background:rgba(255,255,255,0.06); padding:8px; border-radius:8px; font-size:12px; display:flex; flex-direction:column; gap:4px;">
+        <div>ระดับน้ำเจ้าพระยา: <strong style="color:#00f2fe;">+2.18 ม. รทก.</strong> (ตลิ่ง 2.30 ม.)</div>
+        <div>คลองอ้อมนนท์: <strong style="color:#38bdf8;">+1.43 ม.</strong> (ตลิ่ง 1.85 ม.)</div>
+        <div>คลองมหาสวัสดิ์: <strong style="color:#f87171;">+2.19 ม.</strong> (ตลิ่ง 2.07 ม.)</div>
+      </div>
+    </div>
+  `);
+  state.stationMarkers.push(chaloemMarker);
 }
 
 // 5. Render Stations Telemetry Table
@@ -848,12 +998,27 @@ function generateStaticHydrologyData() {
     bkkPumpCapacity: 1650
   });
 
+  const nonthaburiZone = {
+    zoneName: 'ต.บางศรีเมือง อ.เมืองนนทบุรี - อ.บางกรวย (วัดเฉลิมพระเกียรติฯ & คลองอ้อมนนท์)',
+    watChaloemMsl: 2.18,
+    riskLevel: 'watch',
+    riskBadge: 'เฝ้าระวังช่วงน้ำทะเลหนุน',
+    riskSummary: 'ระดับน้ำเจ้าพระยาหน้าวัดเฉลิมฯ คาดการณ์ +2.18 ม. รทก. (ตลิ่ง ~2.30 ม.) ชุมชนนอกคันกั้นน้ำและท่าน้ำวัดเฉลิมฯ เสี่ยงน้ำเอ่อช่วงน้ำทะเลหนุนสูงสุด ขณะที่คลองอ้อมนนท์ยังต่ำกว่าตลิ่ง 42 ซม.',
+    stations: [
+      { code: 'WAT_CHALOEM', name: 'แม่น้ำเจ้าพระยา หน้าวัดเฉลิมพระเกียรติฯ / สะพานพระราม 5', waterlevelMsl: 2.18, bankMsl: 2.30, diffToBank: 0.12, status: 'เฝ้าระวังน้ำหนุน' },
+      { code: 'BKK007', name: 'คลองอ้อมนนท์ บางใหญ่ (BKK007)', waterlevelMsl: 1.43, bankMsl: 1.85, storagePercent: 90.7, diffToBank: 0.42, status: 'ปกติ' },
+      { code: 'BKK003', name: 'คลองมหาสวัสดิ์ บางกรวย (BKK003)', waterlevelMsl: 2.19, bankMsl: 2.07, storagePercent: 102.2, diffToBank: -0.12, status: 'ล้นตลิ่งริมคลอง' },
+      { code: 'CPY014', name: 'แม่น้ำเจ้าพระยา สะพานนวลฉวี (CPY014)', waterlevelMsl: 2.49, bankMsl: 2.50, diffToBank: 0.01, status: 'ปริ่มคันกั้นน้ำ' }
+    ]
+  };
+
   return {
     success: true,
     updatedAt: new Date().toISOString(),
     prediction,
     stations,
     dams,
+    nonthaburiZone,
     rain: { bkkAverage24h: 5.4, stationsCount: 16 },
     tide: { currentMsl: liveHighTideMsl, expectedHighTideMsl: liveHighTideMsl > 1.4 ? liveHighTideMsl : 1.72 }
   };

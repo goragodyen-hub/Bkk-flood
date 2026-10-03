@@ -2026,6 +2026,417 @@ body.mode-pro .pro-detailed-view {
 }
 
 /* ========================================================
+   NONTHABURI ZONE: BANG SI MUEANG & BANG KRUAI (WAT CHALOEM)
+   ======================================================== */
+.m-nonthaburi-box {
+  background: linear-gradient(135deg, rgba(14, 28, 54, 0.85), rgba(7, 16, 34, 0.95));
+  border: 1px solid rgba(0, 242, 254, 0.35);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.35), 0 0 20px rgba(0, 242, 254, 0.12);
+  border-radius: var(--radius-lg);
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.m-nb-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 10px;
+  flex-wrap: wrap;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  padding-bottom: 12px;
+}
+
+.m-nb-title-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.m-nb-pin-badge {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--accent-cyan);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.m-nb-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #ffffff;
+  line-height: 1.35;
+}
+
+.m-nb-status-badge {
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 5px 12px;
+  border-radius: var(--radius-full);
+  background: rgba(245, 158, 11, 0.18);
+  color: var(--accent-amber);
+  border: 1px solid rgba(245, 158, 11, 0.35);
+  white-space: nowrap;
+}
+
+.m-nb-summary {
+  font-size: 0.82rem;
+  line-height: 1.5;
+  color: #cbd5e1;
+  background: rgba(0, 0, 0, 0.25);
+  padding: 10px 14px;
+  border-radius: var(--radius-sm);
+  border-left: 3px solid var(--accent-cyan);
+}
+
+.m-nb-sensors-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.m-nb-sensor-card {
+  background: rgba(15, 23, 42, 0.6);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.m-nb-sc-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.m-nb-sc-top strong {
+  font-family: var(--font-mono);
+  font-size: 1rem;
+  color: var(--accent-cyan);
+}
+
+.m-nb-sc-sub {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+}
+
+.m-nb-cctv-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background: rgba(10, 19, 38, 0.7);
+  border: 1px solid rgba(56, 189, 248, 0.2);
+  border-radius: var(--radius-md);
+  padding: 14px;
+}
+
+.m-nb-cctv-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.live-dot-pulse {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #ef4444;
+  box-shadow: 0 0 10px #ef4444;
+  animation: pulse-cctv 1.2s infinite;
+  margin-left: auto;
+}
+
+@keyframes pulse-cctv {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.4; transform: scale(1.2); }
+}
+
+.m-nb-cctv-links {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.btn-cctv-feed {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(15, 23, 42, 0.75);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--radius-sm);
+  padding: 10px 14px;
+  color: #ffffff;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.btn-cctv-feed:hover {
+  background: rgba(2, 132, 199, 0.2);
+  border-color: rgba(0, 242, 254, 0.4);
+  transform: translateX(2px);
+}
+
+.btn-cctv-feed i:first-child {
+  font-size: 16px;
+  color: var(--accent-cyan);
+  flex-shrink: 0;
+}
+
+.btn-cctv-feed div {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.btn-cctv-feed strong {
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.btn-cctv-feed span {
+  font-size: 0.7rem;
+  color: var(--text-secondary);
+}
+
+.cctv-ext {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+/* Pro View Nonthaburi Section */
+.nonthaburi-pro-section {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.badge-special-zone {
+  font-size: 0.75rem;
+  background: rgba(0, 242, 254, 0.12);
+  color: var(--accent-cyan);
+  border: 1px solid rgba(0, 242, 254, 0.3);
+  padding: 4px 12px;
+  border-radius: var(--radius-full);
+  font-weight: 600;
+}
+
+.nb-pro-grid {
+  display: grid;
+  grid-template-columns: 1.15fr 1fr;
+  gap: 22px;
+}
+
+.nb-pro-left, .nb-pro-right {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.nb-risk-banner {
+  background: rgba(15, 23, 42, 0.7);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  border-radius: var(--radius-md);
+  padding: 16px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.nb-rb-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.nb-status-pill {
+  font-size: 0.78rem;
+  font-weight: 700;
+  padding: 4px 12px;
+  border-radius: var(--radius-full);
+  background: rgba(245, 158, 11, 0.2);
+  color: var(--accent-amber);
+  border: 1px solid rgba(245, 158, 11, 0.4);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.nb-level-readout {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+.nb-level-readout strong {
+  font-family: var(--font-mono);
+  color: var(--accent-cyan);
+  font-size: 1.05rem;
+}
+
+.nb-rb-text {
+  font-size: 0.85rem;
+  line-height: 1.55;
+  color: #cbd5e1;
+}
+
+.nb-stations-subtable {
+  background: rgba(15, 23, 42, 0.5);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.nb-sub-row {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr 1.2fr;
+  padding: 12px 14px;
+  align-items: center;
+  font-size: 0.82rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.nb-sub-row.header {
+  background: rgba(10, 19, 38, 0.8);
+  font-weight: 700;
+  color: var(--text-secondary);
+  font-size: 0.76rem;
+}
+
+.badge-sm {
+  font-size: 0.7rem;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+  display: inline-flex;
+  justify-content: center;
+  text-align: center;
+}
+
+.badge-warn {
+  background: rgba(245, 158, 11, 0.15);
+  color: var(--accent-amber);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+}
+
+.badge-ok {
+  background: rgba(16, 185, 129, 0.15);
+  color: var(--accent-emerald);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.badge-danger {
+  background: rgba(239, 68, 68, 0.15);
+  color: #f87171;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+.nb-cctv-box {
+  background: rgba(15, 23, 42, 0.6);
+  border: 1px solid rgba(56, 189, 248, 0.2);
+  border-radius: var(--radius-md);
+  padding: 16px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  height: 100%;
+}
+
+.nb-cctv-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #ffffff;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.cctv-links-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.cctv-card-link {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: rgba(10, 19, 38, 0.75);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+  color: #ffffff;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.cctv-card-link:hover {
+  background: rgba(2, 132, 199, 0.15);
+  border-color: rgba(0, 242, 254, 0.4);
+  transform: translateY(-1px);
+}
+
+.cctv-icon-box {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: rgba(0, 242, 254, 0.12);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--accent-cyan);
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+.cctv-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+}
+
+.cctv-info strong {
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.cctv-info p {
+  font-size: 0.72rem;
+  color: var(--text-secondary);
+  line-height: 1.35;
+}
+
+.cctv-tag {
+  font-size: 0.68rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 4px;
+}
+
+.link-arrow {
+  color: var(--text-muted);
+  font-size: 14px;
+}
+
+/* ========================================================
    PRO DETAILED VIEW - COMPREHENSIVE MOBILE RESPONSIVENESS
    (Fix Horizontal Overflow on Screen Width <= 768px)
    ======================================================== */
@@ -2363,6 +2774,57 @@ body.mode-pro .pro-detailed-view {
     gap: 12px !important;
     width: 100% !important;
     min-width: 0 !important;
+  }
+
+  /* 12. Nonthaburi Special Section */
+  .nonthaburi-pro-section {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    overflow-x: hidden !important;
+    padding: 14px 12px !important;
+  }
+
+  .nb-pro-grid {
+    grid-template-columns: 1fr !important;
+    gap: 16px !important;
+    width: 100% !important;
+  }
+
+  .nb-rb-top {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 8px !important;
+  }
+
+  .nb-stations-subtable {
+    width: 100% !important;
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+  }
+
+  .nb-sub-row {
+    grid-template-columns: 1.4fr 1fr 1fr 1fr !important;
+    font-size: 0.74rem !important;
+    padding: 10px 8px !important;
+    min-width: 440px !important;
+  }
+
+  .cctv-card-link {
+    padding: 10px !important;
+  }
+
+  /* Mobile Nonthaburi Box */
+  .m-nonthaburi-box {
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  .m-nb-header {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 8px !important;
   }
 
   /* Footer */

@@ -20,7 +20,7 @@
 
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
-  <link rel="stylesheet" href="./css/style.css?v=7">
+  <link rel="stylesheet" href="./css/style.css?v=11">
 </head>
 <body>
   <!-- Background Glow Accents -->
@@ -200,6 +200,89 @@
             <span>ระยะทาง 240 กม.</span>
           </div>
           <div class="m-eta-time" id="mEtaNakhonSawan">~48 - 54 ชม.</div>
+        </div>
+      </div>
+
+      <!-- SPECIAL LOCAL MONITOR: Bang Si Mueang & Bang Kruai (Wat Chaloem Phra Kiat) -->
+      <div class="m-nonthaburi-box glass-panel" id="mNonthaburiBox">
+        <div class="m-nb-header">
+          <div class="m-nb-title-group">
+            <span class="m-nb-pin-badge"><i class="fa-solid fa-location-dot"></i> จุดเฝ้าระวังเฉพาะพื้นที่</span>
+            <h3 class="m-nb-title">ต.บางศรีเมือง - อ.บางกรวย (วัดเฉลิมพระเกียรติฯ)</h3>
+          </div>
+          <span class="m-nb-status-badge" id="mNbStatusBadge">เฝ้าระวังน้ำหนุน</span>
+        </div>
+
+        <div class="m-nb-summary" id="mNbSummary">
+          ระดับน้ำเจ้าพระยาหน้าวัดเฉลิมฯ คาดการณ์ +2.18 ม. รทก. (ตลิ่ง ~2.30 ม.) ชุมชนนอกคันกั้นน้ำและท่าน้ำวัดเฉลิมฯ เสี่ยงน้ำเอ่อช่วงน้ำทะเลหนุนสูงสุด ขณะที่คลองอ้อมนนท์ยังต่ำกว่าตลิ่ง 42 ซม.
+        </div>
+
+        <!-- 3 Key Local Sensors -->
+        <div class="m-nb-sensors-grid">
+          <div class="m-nb-sensor-card">
+            <div class="m-nb-sc-top">
+              <span><i class="fa-solid fa-water text-cyan"></i> เจ้าพระยา หน้าวัดเฉลิมฯ</span>
+              <strong id="mNbWatMsl">+2.18 ม.</strong>
+            </div>
+            <div class="m-nb-sc-sub">สันเขื่อน/ตลิ่ง 2.30 ม. | ห่างตลิ่ง 0.12 ม.</div>
+            <div class="progress-track"><div class="progress-bar bar-flow" id="mNbWatBar" style="width: 93%;"></div></div>
+          </div>
+
+          <div class="m-nb-sensor-card">
+            <div class="m-nb-sc-top">
+              <span><i class="fa-solid fa-route text-indigo"></i> คลองอ้อมนนท์ (BKK007)</span>
+              <strong id="mNbOmMsl">+1.43 ม.</strong>
+            </div>
+            <div class="m-nb-sc-sub">ตลิ่ง 1.85 ม. | ต่ำกว่าตลิ่ง 0.42 ม. (จุ 90.7%)</div>
+            <div class="progress-track"><div class="progress-bar bar-tide" id="mNbOmBar" style="width: 90%;"></div></div>
+          </div>
+
+          <div class="m-nb-sensor-card">
+            <div class="m-nb-sc-top">
+              <span><i class="fa-solid fa-water-ladder text-amber"></i> คลองมหาสวัสดิ์ บางกรวย (BKK003)</span>
+              <strong id="mNbMahaMsl">+2.19 ม.</strong>
+            </div>
+            <div class="m-nb-sc-sub">ตลิ่ง 2.07 ม. | ล้นตลิ่งลุ่มต่ำ +0.12 ม. (102%)</div>
+            <div class="progress-track"><div class="progress-bar bar-rain" id="mNbMahaBar" style="width: 100%;"></div></div>
+          </div>
+        </div>
+
+        <!-- CCTV & Live Camera Feeds Section -->
+        <div class="m-nb-cctv-wrap">
+          <div class="m-nb-cctv-head">
+            <i class="fa-solid fa-video text-cyan"></i>
+            <span>กล้องวงจรปิด CCTV ถ่ายทอดภาพสดในพื้นที่</span>
+            <span class="live-dot-pulse"></span>
+          </div>
+
+          <div class="m-nb-cctv-links">
+            <a href="https://nkndatamap.nakornnont.go.th/public" target="_blank" rel="noopener" class="btn-cctv-feed">
+              <i class="fa-solid fa-camera"></i>
+              <div>
+                <strong>CCTV เทศบาลนครนนทบุรี (ท่าน้ำนนท์)</strong>
+                <span>ส่องระดับน้ำเจ้าพระยา & ท่าเรือ ตรงข้ามวัดเฉลิมฯ</span>
+              </div>
+              <i class="fa-solid fa-arrow-up-right-from-square cctv-ext"></i>
+            </a>
+
+            <a href="https://traffic.longdo.com/" target="_blank" rel="noopener" class="btn-cctv-feed">
+              <i class="fa-solid fa-bridge-water"></i>
+              <div>
+                <strong>CCTV สะพานพระราม 5 - บางกรวย</strong>
+                <span>กล้องจราจรและระดับน้ำสะพานพระราม 5 / นครอินทร์</span>
+              </div>
+              <i class="fa-solid fa-arrow-up-right-from-square cctv-ext"></i>
+            </a>
+
+            <a href="https://nonthaburi.thaiwater.net/" target="_blank" rel="noopener" class="btn-cctv-feed">
+              <i class="fa-solid fa-tower-observation"></i>
+              <div>
+                <strong>คลังข้อมูลและกล้องตรวจวัดน้ำ จ.นนทบุรี</strong>
+                <span>ระบบโทรมาตรและกล้องตรวจวัด สสน. นนทบุรี</span>
+              </div>
+              <i class="fa-solid fa-arrow-up-right-from-square cctv-ext"></i>
+            </a>
+          </div>
         </div>
       </div>
 
@@ -647,6 +730,112 @@
       </div>
     </section>
 
+    <!-- NONTHABURI ZONE SPECIAL MONITOR (PRO VIEW) -->
+    <section class="nonthaburi-pro-section glass-panel">
+      <div class="panel-header">
+        <div class="panel-title">
+          <i class="fa-solid fa-location-crosshairs text-cyan"></i>
+          <span>พื้นที่เฝ้าระวังพิเศษ: ต.บางศรีเมือง อ.เมืองนนทบุรี - อ.บางกรวย (วัดเฉลิมพระเกียรติฯ & คลองอ้อมนนท์)</span>
+        </div>
+        <span class="badge-special-zone">Hyper-Local Telemetry & CCTV</span>
+      </div>
+
+      <div class="nb-pro-grid">
+        <div class="nb-pro-left">
+          <div class="nb-risk-banner" id="nbRiskBanner">
+            <div class="nb-rb-top">
+              <span class="nb-status-pill" id="nbStatusPill"><i class="fa-solid fa-triangle-exclamation"></i> เฝ้าระวังน้ำหนุนริมตลิ่ง</span>
+              <span class="nb-level-readout">ระดับน้ำหน้าวัดเฉลิมฯ: <strong id="nbWatMslPro">+2.18 ม. รทก.</strong></span>
+            </div>
+            <p class="nb-rb-text" id="nbSummaryPro">
+              ระดับน้ำแม่น้ำเจ้าพระยาช่วงหน้าวัดเฉลิมพระเกียรติฯ และสะพานพระราม 5 มีระดับคาดการณ์เฉลี่ย +2.18 ม. รทก. (ตลิ่ง ~2.30 ม.) ชุมชนนอกแนวคันกั้นน้ำและท่าน้ำวัดเฉลิมฯ เสี่ยงน้ำเอ่อช่วงน้ำทะเลหนุนสูงสุดประจำวัน ขณะที่คลองอ้อมนนท์อยู่ที่ +1.43 ม. ต่ำกว่าตลิ่ง 0.42 ม.
+            </p>
+          </div>
+
+          <!-- Table of Local Stations -->
+          <div class="nb-stations-subtable">
+            <div class="nb-sub-row header">
+              <span>จุดตรวจวัด</span>
+              <span>ระดับน้ำจริง</span>
+              <span>ระดับตลิ่ง</span>
+              <span>ส่วนต่างตลิ่ง</span>
+              <span>สถานะ</span>
+            </div>
+            <div class="nb-sub-row">
+              <span><strong>เจ้าพระยา หน้าวัดเฉลิมฯ</strong> / พระราม 5</span>
+              <span class="text-cyan font-mono" id="nbWatVal">+2.18 ม.</span>
+              <span class="font-mono">2.30 ม.</span>
+              <span class="text-amber font-mono" id="nbWatDiff">-0.12 ม.</span>
+              <span class="badge-sm badge-warn" id="nbWatBadge">เฝ้าระวังน้ำหนุน</span>
+            </div>
+            <div class="nb-sub-row">
+              <span><strong>คลองอ้อมนนท์</strong> บางใหญ่ (BKK007)</span>
+              <span class="text-cyan font-mono" id="nbOmVal">+1.43 ม.</span>
+              <span class="font-mono">1.85 ม.</span>
+              <span class="text-emerald font-mono" id="nbOmDiff">+0.42 ม.</span>
+              <span class="badge-sm badge-ok" id="nbOmBadge">ปกติ (จุ 90.7%)</span>
+            </div>
+            <div class="nb-sub-row">
+              <span><strong>คลองมหาสวัสดิ์</strong> บางกรวย (BKK003)</span>
+              <span class="text-cyan font-mono" id="nbMahaVal">+2.19 ม.</span>
+              <span class="font-mono">2.07 ม.</span>
+              <span class="text-crimson font-mono" id="nbMahaDiff">-0.12 ม.</span>
+              <span class="badge-sm badge-danger" id="nbMahaBadge">ล้นตลิ่งลุ่มต่ำ</span>
+            </div>
+            <div class="nb-sub-row">
+              <span><strong>เจ้าพระยา สะพานนวลฉวี</strong> (CPY014)</span>
+              <span class="text-cyan font-mono" id="nbNuanVal">+2.49 ม.</span>
+              <span class="font-mono">2.50 ม.</span>
+              <span class="text-crimson font-mono" id="nbNuanDiff">-0.01 ม.</span>
+              <span class="badge-sm badge-danger" id="nbNuanBadge">ปริ่มคันกั้นน้ำ</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="nb-pro-right">
+          <!-- CCTV Feeds Card -->
+          <div class="nb-cctv-box">
+            <div class="nb-cctv-header">
+              <i class="fa-solid fa-video text-cyan"></i>
+              <span>กล้องวงจรปิด CCTV ถ่ายทอดสดริมน้ำในพื้นที่</span>
+              <span class="live-dot-pulse"></span>
+            </div>
+            <div class="cctv-links-stack">
+              <a href="https://nkndatamap.nakornnont.go.th/public" target="_blank" rel="noopener" class="cctv-card-link">
+                <div class="cctv-icon-box"><i class="fa-solid fa-camera"></i></div>
+                <div class="cctv-info">
+                  <strong>กล้อง CCTV เทศบาลนครนนทบุรี (ท่าน้ำนนท์)</strong>
+                  <p>ส่องระดับน้ำเจ้าพระยา & ท่าเรือข้ามฟาก ตรงข้ามวัดเฉลิมฯ (เทศบาลนครนนทบุรี)</p>
+                  <span class="cctv-tag"><i class="fa-solid fa-circle text-emerald"></i> สด 24 ชม. เปิดแผนที่ภาพสด</span>
+                </div>
+                <i class="fa-solid fa-arrow-up-right-from-square link-arrow"></i>
+              </a>
+
+              <a href="https://traffic.longdo.com/" target="_blank" rel="noopener" class="cctv-card-link">
+                <div class="cctv-icon-box"><i class="fa-solid fa-bridge-water"></i></div>
+                <div class="cctv-info">
+                  <strong>กล้องจราจร & ระดับน้ำ สะพานพระราม 5 - บางกรวย</strong>
+                  <p>ส่องภาพสดสะพานพระราม 5, ถนนนครอินทร์, และสะพานพระราม 7</p>
+                  <span class="cctv-tag"><i class="fa-solid fa-circle text-emerald"></i> Real-time Longdo Traffic</span>
+                </div>
+                <i class="fa-solid fa-arrow-up-right-from-square link-arrow"></i>
+              </a>
+
+              <a href="https://nonthaburi.thaiwater.net/" target="_blank" rel="noopener" class="cctv-card-link">
+                <div class="cctv-icon-box"><i class="fa-solid fa-tower-observation"></i></div>
+                <div class="cctv-info">
+                  <strong>คลังข้อมูลและสถานีวัดน้ำ จ.นนทบุรี</strong>
+                  <p>ระบบตรวจวัดระดับน้ำและกล้องโทรมาตรลุ่มน้ำเจ้าพระยา-นนทบุรี (สสน.)</p>
+                  <span class="cctv-tag"><i class="fa-solid fa-circle text-cyan"></i> อัปเดตทุก 10 นาที</span>
+                </div>
+                <i class="fa-solid fa-arrow-up-right-from-square link-arrow"></i>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <!-- Stations Data & Major Dams Section -->
     <section class="stations-section">
       <div class="section-nav">
@@ -710,6 +899,6 @@
 
   <!-- Scripts -->
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <script src="./js/app.js?v=5"></script>
+  <script src="./js/app.js?v=11"></script>
 </body>
 </html>

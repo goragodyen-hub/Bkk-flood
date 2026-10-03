@@ -522,12 +522,112 @@ app.get('/api/water/live', async (req, res) => {
       bkkPumpCapacity: 1650
     });
 
+    // Extract Nonthaburi Stations (Bang Si Mueang / Bang Kruai / Wat Chaloem Phra Kiat)
+    const nonthaburiRaw = (waterLevelData?.waterlevel_data?.data || []).filter(d => {
+      const code = d.station?.tele_station_oldcode || '';
+      const name = d.station?.tele_station_name?.th || '';
+      return code === 'BKK007' || code === 'BKK003' || code === 'CPY014' || code === 'C.12' || name.includes('คลองอ้อมนนท์') || name.includes('มหาสวัสดิ');
+    });
+
+    const bkk007 = nonthaburiRaw.find(d => d.station?.tele_station_oldcode === 'BKK007' || (d.station?.tele_station_name?.th || '').includes('คลองอ้อมนนท์'));
+    const bkk003 = nonthaburiRaw.find(d => d.station?.tele_station_oldcode === 'BKK003' || (d.station?.tele_station_name?.th || '').includes('มหาสวัสดิ'));
+    const cpy014 = nonthaburiRaw.find(d => d.station?.tele_station_oldcode === 'CPY014' || (d.station?.tele_station_name?.th || '').includes('นวลฉวี'));
+    const c12 = nonthaburiRaw.find(d => d.station?.tele_station_oldcode === 'C.12');
+
+    const bkk007Msl = bkk007?.waterlevel_msl ? parseFloat(bkk007.waterlevel_msl) : 1.43;
+    const bkk003Msl = bkk003?.waterlevel_msl ? parseFloat(bkk003.waterlevel_msl) : 2.19;
+    const cpy014Msl = cpy014?.waterlevel_msl ? parseFloat(cpy014.waterlevel_msl) : 2.49;
+    const c12Msl = c12?.waterlevel_msl ? parseFloat(c12.waterlevel_msl) : 1.98;
+
+    // Wat Chaloem Phra Kiat river level estimate (between CPY014 and C.12)
+    const watChaloemMsl = Math.round(((cpy014Msl * 0.45) + (c12Msl * 0.55)) * 100) / 100;
+
+    const nonthaburiZone = {
+      zoneName: 'ต.บางศรีเมือง อ.เมืองนนทบุรี - อ.บางกรวย (วัดเฉลิมพระเกียรติฯ & คลองอ้อมนนท์)',
+      watChaloemMsl,
+      riskLevel: watChaloemMsl >= 2.30 ? 'critical' : (watChaloemMsl >= 2.05 ? 'watch' : 'normal'),
+      riskBadge: watChaloemMsl >= 2.30 ? 'วิกฤตล้นตลิ่งริมน้ำ' : 'เฝ้าระวังช่วงน้ำทะเลหนุน',
+      riskSummary: `ระดับน้ำแม่น้ำเจ้าพระยาหน้าวัดเฉลิมฯ อยู่ที่ประมาณ +${watChaloemMsl.toFixed(2)} ม. รทก. (ตลิ่งริมน้ำ ~2.30 ม.) ชุมชนนอกแนวคันกั้นน้ำและท่าน้ำวัดเฉลิมฯ เสี่ยงน้ำเอ่อช่วงน้ำทะเลหนุนสูงสุด ขณะที่คลองอ้อมนนท์อยู่ที่ +${bkk007Msl.toFixed(2)} ม. ต่ำกว่าตลิ่ง ${(1.85 - bkk007Msl).toFixed(2)} ม.`,
+      stations: [
+        {
+          code: 'BKK007',
+          name: 'คลองอ้อมนนท์ บางใหญ่ (ถนนบางกรวย-ไทรน้อย)',
+          channel: 'คลองอ้อมนนท์ (เชื่อมแม่น้ำเจ้าพระยาข้างวัดเฉลิมฯ)',
+          waterlevelMsl: bkk007Msl,
+          bankMsl: 1.85,
+          storagePercent: bkk007?.storage_percent ? parseFloat(bkk007.storage_percent) : 90.7,
+          diffToBank: Math.round((1.85 - bkk007Msl) * 100) / 100,
+          status: bkk007Msl >= 1.85 ? 'ล้นตลิ่ง' : (bkk007Msl >= 1.40 ? 'เฝ้าระวัง' : 'ปกติ')
+        },
+        {
+          code: 'BKK003',
+          name: 'คลองมหาสวัสดิ์ บางกรวย-สวนผัก',
+          channel: 'คลองมหาสวัสดิ์ เชื่อม อ.บางกรวย',
+          waterlevelMsl: bkk003Msl,
+          bankMsl: 2.07,
+          storagePercent: bkk003?.storage_percent ? parseFloat(bkk003.storage_percent) : 102.2,
+          diffToBank: Math.round((2.07 - bkk003Msl) * 100) / 100,
+          status: bkk003Msl >= 2.07 ? 'ล้นตลิ่งริมคลอง' : 'ปกติ'
+        },
+        {
+          code: 'CPY014',
+          name: 'แม่น้ำเจ้าพระยา สะพานนวลฉวี (ปากเกร็ด)',
+          channel: 'แม่น้ำเจ้าพระยาตอนบนของนนทบุรี',
+          waterlevelMsl: cpy014Msl,
+          bankMsl: 2.50,
+          storagePercent: cpy014?.storage_percent ? parseFloat(cpy014.storage_percent) : 99.9,
+          diffToBank: Math.round((2.50 - cpy014Msl) * 100) / 100,
+          status: cpy014Msl >= 2.50 ? 'ล้นคันกั้นน้ำ' : 'ปริ่มคันกั้นน้ำ'
+        },
+        {
+          code: 'WAT_CHALOEM',
+          name: 'แม่น้ำเจ้าพระยา หน้าวัดเฉลิมพระเกียรติฯ / สะพานพระราม 5',
+          channel: 'แม่น้ำเจ้าพระยา ฝั่งตะวันตก (ต.บางศรีเมือง)',
+          waterlevelMsl: watChaloemMsl,
+          bankMsl: 2.30,
+          storagePercent: Math.round((watChaloemMsl / 2.30) * 100),
+          diffToBank: Math.round((2.30 - watChaloemMsl) * 100) / 100,
+          status: watChaloemMsl >= 2.30 ? 'ล้นตลิ่งนอกคัน' : 'เฝ้าระวังน้ำหนุน'
+        }
+      ],
+      cctvList: [
+        {
+          id: 'cctv_nkndatamap',
+          title: 'กล้อง CCTV เทศบาลนครนนทบุรี (ท่าน้ำนนท์ / ริมน้ำ)',
+          desc: 'ส่องระดับน้ำเจ้าพระยา ท่าเรือเทศบาล และหอนาฬิกา (ตรงข้ามวัดเฉลิมพระเกียรติฯ)',
+          provider: 'เทศบาลนครนนทบุรี (นครนนท์ GIS)',
+          statusText: 'ถ่ายทอดสด 24 ชม.',
+          url: 'https://nkndatamap.nakornnont.go.th/public',
+          isLive: true
+        },
+        {
+          id: 'cctv_longdo_nonthaburi',
+          title: 'กล้องจราจร & ระดับน้ำ สะพานพระราม 5 - บางกรวย',
+          desc: 'ส่องภาพสดสะพานพระราม 5, ถนนนครอินทร์, และสะพานพระราม 7',
+          provider: 'Longdo Traffic & กรมทางหลวง',
+          statusText: 'เรียลไทม์ Real-Time',
+          url: 'https://traffic.longdo.com/',
+          isLive: true
+        },
+        {
+          id: 'cctv_thaiwater_nonthaburi',
+          title: 'ระบบติดตามสถานการณ์น้ำ จ.นนทบุรี',
+          desc: 'โทรมาตรและกล้องตรวจวัดระดับน้ำแม่น้ำ-คลองใน จ.นนทบุรี',
+          provider: 'คลังข้อมูลน้ำแห่งชาติ (สสน.)',
+          statusText: 'ข้อมูลสดทุก 10 นาที',
+          url: 'https://nonthaburi.thaiwater.net/',
+          isLive: true
+        }
+      ]
+    };
+
     res.json({
       success: true,
       updatedAt: new Date().toISOString(),
       prediction,
       stations,
       dams,
+      nonthaburiZone,
       rain: {
         bkkAverage24h: avgBkkRain,
         stationsCount: bkkRainList.length
@@ -540,6 +640,47 @@ app.get('/api/water/live', async (req, res) => {
     });
   } catch (err) {
     console.error('Error generating live data:', err);
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+// API: Dedicated Nonthaburi / Bang Si Mueang Zone
+app.get('/api/water/nonthaburi', async (req, res) => {
+  try {
+    const rawWaterLevelData = await getWaterLevelData();
+    const nonthaburiRaw = (rawWaterLevelData?.waterlevel_data?.data || []).filter(d => {
+      const code = d.station?.tele_station_oldcode || '';
+      const name = d.station?.tele_station_name?.th || '';
+      return code === 'BKK007' || code === 'BKK003' || code === 'CPY014' || code === 'C.12' || name.includes('คลองอ้อมนนท์') || name.includes('มหาสวัสดิ');
+    });
+
+    const bkk007 = nonthaburiRaw.find(d => d.station?.tele_station_oldcode === 'BKK007' || (d.station?.tele_station_name?.th || '').includes('คลองอ้อมนนท์'));
+    const bkk003 = nonthaburiRaw.find(d => d.station?.tele_station_oldcode === 'BKK003' || (d.station?.tele_station_name?.th || '').includes('มหาสวัสดิ'));
+    const cpy014 = nonthaburiRaw.find(d => d.station?.tele_station_oldcode === 'CPY014' || (d.station?.tele_station_name?.th || '').includes('นวลฉวี'));
+    const c12 = nonthaburiRaw.find(d => d.station?.tele_station_oldcode === 'C.12');
+
+    const bkk007Msl = bkk007?.waterlevel_msl ? parseFloat(bkk007.waterlevel_msl) : 1.43;
+    const bkk003Msl = bkk003?.waterlevel_msl ? parseFloat(bkk003.waterlevel_msl) : 2.19;
+    const cpy014Msl = cpy014?.waterlevel_msl ? parseFloat(cpy014.waterlevel_msl) : 2.49;
+    const c12Msl = c12?.waterlevel_msl ? parseFloat(c12.waterlevel_msl) : 1.98;
+    const watChaloemMsl = Math.round(((cpy014Msl * 0.45) + (c12Msl * 0.55)) * 100) / 100;
+
+    res.json({
+      success: true,
+      updatedAt: new Date().toISOString(),
+      zoneName: 'ต.บางศรีเมือง อ.เมืองนนทบุรี - อ.บางกรวย (วัดเฉลิมพระเกียรติฯ & คลองอ้อมนนท์)',
+      watChaloemMsl,
+      riskLevel: watChaloemMsl >= 2.30 ? 'critical' : (watChaloemMsl >= 2.05 ? 'watch' : 'normal'),
+      riskBadge: watChaloemMsl >= 2.30 ? 'วิกฤตล้นตลิ่งริมน้ำ' : 'เฝ้าระวังช่วงน้ำทะเลหนุน',
+      riskSummary: `ระดับน้ำแม่น้ำเจ้าพระยาหน้าวัดเฉลิมฯ อยู่ที่ประมาณ +${watChaloemMsl.toFixed(2)} ม. รทก. (ตลิ่งริมน้ำ ~2.30 ม.) ชุมชนนอกแนวคันกั้นน้ำและท่าน้ำวัดเฉลิมฯ เสี่ยงน้ำเอ่อช่วงน้ำทะเลหนุนสูงสุด ขณะที่คลองอ้อมนนท์อยู่ที่ +${bkk007Msl.toFixed(2)} ม. ต่ำกว่าตลิ่ง ${(1.85 - bkk007Msl).toFixed(2)} ม.`,
+      stations: [
+        { code: 'BKK007', name: 'คลองอ้อมนนท์ บางใหญ่', waterlevelMsl: bkk007Msl, bankMsl: 1.85 },
+        { code: 'BKK003', name: 'คลองมหาสวัสดิ์ บางกรวย-สวนผัก', waterlevelMsl: bkk003Msl, bankMsl: 2.07 },
+        { code: 'CPY014', name: 'สะพานนวลฉวี (ปากเกร็ด)', waterlevelMsl: cpy014Msl, bankMsl: 2.50 },
+        { code: 'WAT_CHALOEM', name: 'หน้าวัดเฉลิมพระเกียรติฯ / สะพานพระราม 5', waterlevelMsl: watChaloemMsl, bankMsl: 2.30 }
+      ]
+    });
+  } catch (err) {
     res.status(500).json({ success: false, error: err.message });
   }
 });
