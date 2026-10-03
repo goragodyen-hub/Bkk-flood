@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ระบบติดตามมวลน้ำลุ่มน้ำเจ้าพระยา & ประเมินความเสี่ยงน้ำท่วม กทม. (Bangkok Flood Intelligence)</title>
+  <meta name="description" content="ระบบวิเคราะห์และเฝ้าระวังมวลน้ำเหนือตามลุ่มน้ำเจ้าพระยาก่อนเข้าสู่กรุงเทพมหานคร พร้อมคำนวณความเสี่ยงน้ำท่วมด้วยสมการ 3 น้ำ (น้ำเหนือ + น้ำทะเลหนุน + น้ำฝน)">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Prompt:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+  <link rel="stylesheet" href="/css/style.css?v=2">
+</head>
+<body>
+  <!-- Background Glow Accents -->
+  <div class="ambient-glow glow-1"></div>
+  <div class="ambient-glow glow-2"></div>
+  <div class="ambient-glow glow-3"></div>
+
+  <div class="app-container">
+    <!-- Top Navigation & Header -->
+    <header class="app-header">
+      <div class="header-left">
+        <div class="logo-badge">
+          <i class="fa-solid fa-water-ladder logo-icon"></i>
+          <span class="pulse-ring"></span>
+        </div>
+        <div class="title-group">
+          <h1>Bangkok Flood Intelligence <span class="tag-version">LIVE TELEMETRY</span></h1>
+          <p class="subtitle">ระบบวิเคราะห์มวลน้ำลุ่มน้ำเจ้าพระยา & คำนวณความเสี่ยงน้ำท่วมกรุงเทพฯ ล่วงหน้า</p>
+        </div>
+      </div>
+      <div class="header-right">
+        <!-- View Mode Switcher (Simple vs Pro) -->
+        <div class="view-mode-toggle" id="viewModeToggle">
+          <button class="btn-mode active" id="btnModeSimple" data-mode="simple" title="มุมมองสรุปสั้นเข้าใจง่าย สำหรับมือถือ">
+            <i class="fa-solid fa-mobile-screen"></i> <span>ดูอย่างง่าย</span>
+          </button>
+          <button class="btn-mode" id="btnModePro" data-mode="pro" title="มุมมองวิเคราะห์เต็มรูปแบบ แผนที่ และเครื่องคิดเลข">
+            <i class="fa-solid fa-chart-line"></i> <span>วิเคราะห์ละเอียด</span>
+          </button>
+        </div>
+
+        <div class="live-pill">
+          <span class="live-indicator"></span>
+          <span id="liveStatusText">กำลังเชื่อมต่อ API สด...</span>
+        </div>
+        <button id="btnRefresh" class="btn-refresh" title="อัปเดตข้อมูลสดเดี๋ยวนี้">
+          <i class="fa-solid fa-arrows-rotate"></i>
+          <span>รีเฟรชข้อมูล</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- MOBILE SIMPLE VIEW (ดูอย่างง่าย - กระชับ ชัดเจน ไม่ซับซ้อน) -->
+    <section class="simple-mobile-view" id="simpleMobileView">
+      <!-- 1. Direct Answer Card: กทม. จะท่วมหรือไม่? -->
+      <div class="m-hero-card" id="mHeroCard">
+        <div class="m-hero-top">
+          <div class="m-hero-badge" id="mHeroBadge">
+            <span class="m-status-dot" id="mStatusDot"></span>
+            <span id="mStatusText">กำลังประเมินสถานะ...</span>
+          </div>
+          <span class="m-calc-time" id="mCalcTime">อัปเดตสด</span>
+        </div>
+        <h2 class="m-hero-question">กทม. จะท่วมหรือไม่?</h2>
+        <div class="m-hero-answer" id="mHeroAnswer">
+          กำลังคำนวณจากปริมาณน้ำเหนือ น้ำหนุน และน้ำฝนสะสม...
+        </div>
+        
+        <!-- Simple Clearance Gauge -->
+        <div class="m-clearance-box">
+          <div class="m-clearance-header">
+            <span>ระดับน้ำคาดการณ์สูงสุด</span>
+            <strong id="mEstPeak">+0.00 ม. รทก.</strong>
+          </div>
+          <div class="m-clearance-track">
+            <div class="m-clearance-bar" id="mClearanceBar" style="width: 50%;"></div>
+            <div class="m-wall-marker" title="คันกั้นน้ำ กทม. 2.50 ม.">
+              <span>คันกั้นน้ำ 2.50 ม.</span>
+            </div>
+          </div>
+          <div class="m-clearance-summary" id="mClearanceSummary">
+            ระยะปลอดภัยถึงยอดคันกั้นน้ำ: <strong>-- ม.</strong>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2. The 3 Numbers You Must Know (3 ตัวเลขสำคัญ) -->
+      <div class="m-section-title">
+        <i class="fa-solid fa-circle-nodes text-cyan"></i> 3 ปัจจัยสำคัญที่ต้องรู้
+      </div>
+      <div class="m-vitals-grid">
+        <!-- Upstream Water -->
+        <div class="m-vital-card">
+          <div class="m-vital-header">
+            <span class="m-vital-name"><i class="fa-solid fa-water text-cyan"></i> 1. น้ำเหนือ (บางไทร)</span>
+            <span class="m-vital-tag" id="mVitalFlowTag">เฝ้าระวัง</span>
+          </div>
+          <div class="m-vital-val" id="mVitalFlowVal">--</div>
+          <div class="m-vital-unit">ลบ.ม./วินาที</div>
+          <div class="m-vital-desc" id="mVitalFlowDesc">จุดวัดด่านหน้าก่อนเข้า กทม. (เกณฑ์รับได้สูงสุด ~3,000)</div>
+        </div>
+
+        <!-- High Tide -->
+        <div class="m-vital-card">
+          <div class="m-vital-header">
+            <span class="m-vital-name"><i class="fa-solid fa-water-ladder text-indigo"></i> 2. น้ำทะเลหนุน</span>
+            <span class="m-vital-tag" id="mVitalTideTag">หนุนปกติ</span>
+          </div>
+          <div class="m-vital-val" id="mVitalTideVal">--</div>
+          <div class="m-vital-unit">ม. รทก.</div>
+          <div class="m-vital-desc" id="mVitalTideDesc">ดันย้อนจากอ่าวไทย ชะลอการระบายลงทะเล</div>
+        </div>
+
+        <!-- Rainfall -->
+        <div class="m-vital-card">
+          <div class="m-vital-header">
+            <span class="m-vital-name"><i class="fa-solid fa-cloud-rain text-amber"></i> 3. น้ำฝน กทม.</span>
+            <span class="m-vital-tag" id="mVitalRainTag">ปกติ</span>
+          </div>
+          <div class="m-vital-val" id="mVitalRainVal">--</div>
+          <div class="m-vital-unit">มม. สะสม 24 ชม.</div>
+          <div class="m-vital-desc" id="mVitalRainDesc">ความสามารถรับน้ำฝนท่อ กทม. ~60 มม./ชม.</div>
+        </div>
+      </div>
+
+      <!-- 3. ETA Countdown Cards (น้ำจะมาถึง กทม. เมื่อไหร่?) -->
+      <div class="m-section-title">
+        <i class="fa-solid fa-stopwatch text-amber"></i> น้ำจะมาถึง กทม. เมื่อไหร่?
+      </div>
+      <div class="m-eta-cards">
+        <div class="m-eta-card">
+          <div class="m-eta-place">
+            <strong>บางไทร อยุธยา (C.29A)</strong>
+            <span>ด่านหน้า 48 กม.</span>
+          </div>
+          <div class="m-eta-time text-cyan" id="mEtaBangSai">~11 - 14 ชม.</div>
+        </div>
+        <div class="m-eta-card">
+          <div class="m-eta-place">
+            <strong>เขื่อนเจ้าพระยา ชัยนาท (C.13)</strong>
+            <span>ระยะทาง 160 กม.</span>
+          </div>
+          <div class="m-eta-time" id="mEtaDam">~32 - 38 ชม.</div>
+        </div>
+        <div class="m-eta-card">
+          <div class="m-eta-place">
+            <strong>นครสวรรค์ (C.2)</strong>
+            <span>ระยะทาง 240 กม.</span>
+          </div>
+          <div class="m-eta-time" id="mEtaNakhonSawan">~48 - 54 ชม.</div>
+        </div>
+      </div>
+
+      <!-- 4. Simple Vulnerable Areas Card -->
+      <div class="m-vulnerable-card">
+        <div class="m-vulnerable-head">
+          <i class="fa-solid fa-triangle-exclamation text-amber"></i>
+          <span>ใครต้องเตรียมตัวและเฝ้าระวัง?</span>
+        </div>
+        <ul class="m-vulnerable-items" id="mVulnerableItems">
+          <li><strong>ชุมชนนอกแนวคันกั้นน้ำ 16 ชุมชน 7 เขต:</strong> ดุสิต, พระนคร, สัมพันธวงศ์, คลองสาน, บางกอกน้อย, บางพลัด, ยานนาวา</li>
+          <li><strong>จุดฟันหลอริมแม่น้ำ:</strong> ถนนทรงวาด, ท่าราชวรดิฐ, ตลาดเทเวศร์</li>
+          <li><strong>พื้นที่ กทม. ชั้นในที่มีคันกั้นน้ำคอนกรีต:</strong> ยังปลอดภัย</li>
+        </ul>
+      </div>
+
+      <!-- 5. Quick Tap-to-Call Emergency Hotlines -->
+      <div class="m-hotlines-box">
+        <div class="m-hotline-title">
+          <i class="fa-solid fa-phone-volume text-cyan"></i> สายด่วนฉุกเฉิน (แตะเพื่อโทรออกทันที)
+        </div>
+        <div class="m-hotlines-row">
+          <a href="tel:1555" class="btn-hotline btn-call-bkk">
+            <i class="fa-solid fa-phone"></i>
+            <div>
+              <strong>โทร 1555</strong>
+              <span>ศูนย์ป้องกันน้ำท่วม กทม.</span>
+            </div>
+          </a>
+          <a href="tel:1460" class="btn-hotline btn-call-rid">
+            <i class="fa-solid fa-phone"></i>
+            <div>
+              <strong>โทร 1460</strong>
+              <span>สายด่วนกรมชลประทาน</span>
+            </div>
+          </a>
+        </div>
+      </div>
+
+      <!-- 6. Switch to Full Pro Analyst View Button -->
+      <div class="m-switch-to-pro">
+        <button class="btn-switch-pro" id="btnSwitchToPro">
+          <i class="fa-solid fa-chart-line"></i>
+          <span>สลับไปดูแผนที่ลุ่มน้ำและเครื่องคิดเลขละเอียด (Pro View)</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- PRO / DETAILED DESKTOP SECTIONS (ซ่อนเมื่อเปิดดูอย่างง่าย) -->
+    <div class="pro-detailed-view" id="proDetailedView">
+      <!-- Key Metrics Ribbon (3 Waters + Gateway) -->
+      <section class="metrics-ribbon">
+      <!-- Bang Sai (C.29A) Gateway Card -->
+      <div class="metric-card highlight-card">
+        <div class="metric-icon-wrap icon-cyan">
+          <i class="fa-solid fa-shield-halved"></i>
+        </div>
+        <div class="metric-details">
+          <div class="metric-label">ด่านหน้าก่อนเข้า กทม. (บางไทร C.29A)</div>
+          <div class="metric-value-row">
+            <span class="metric-number" id="cardBangSaiQ">--</span>
+            <span class="metric-unit">ลบ.ม./วินาที</span>
+          </div>
+          <div class="metric-sub" id="cardBangSaiStatus">จุดคอขวดสำคัญสุดก่อนเข้าเมืองหลวง</div>
+        </div>
+        <div class="metric-badge" id="badgeBangSai">ปกติ</div>
+      </div>
+
+      <!-- Chao Phraya Dam (C.13) -->
+      <div class="metric-card">
+        <div class="metric-icon-wrap icon-blue">
+          <i class="fa-solid fa-bridge-water"></i>
+        </div>
+        <div class="metric-details">
+          <div class="metric-label">การระบายน้ำท้ายเขื่อนเจ้าพระยา (C.13)</div>
+          <div class="metric-value-row">
+            <span class="metric-number" id="cardDamQ">--</span>
+            <span class="metric-unit">ลบ.ม./วินาที</span>
+          </div>
+          <div class="metric-sub" id="cardDamStatus">เกณฑ์วิกฤต: > 2,500 ลบ.ม./วินาที</div>
+        </div>
+        <div class="metric-badge" id="badgeDam">เฝ้าระวัง</div>
+      </div>
+
+      <!-- Sea Tide -->
+      <div class="metric-card">
+        <div class="metric-icon-wrap icon-indigo">
+          <i class="fa-solid fa-water"></i>
+        </div>
+        <div class="metric-details">
+          <div class="metric-label">น้ำทะเลหนุนสูงสุด (ปากแม่น้ำ)</div>
+          <div class="metric-value-row">
+            <span class="metric-number" id="cardTideMsl">--</span>
+            <span class="metric-unit">ม. รทก.</span>
+          </div>
+          <div class="metric-sub" id="cardTideStatus">อิทธิพลหนุนแม่น้ำเจ้าพระยา</div>
+        </div>
+        <div class="metric-badge" id="badgeTide">หนุนปานกลาง</div>
+      </div>
+
+      <!-- Bangkok 24h Rain -->
+      <div class="metric-card">
+        <div class="metric-icon-wrap icon-amber">
+          <i class="fa-solid fa-cloud-showers-heavy"></i>
+        </div>
+        <div class="metric-details">
+          <div class="metric-label">ฝนสะสม 24 ชม. ในพื้นที่ กทม.</div>
+          <div class="metric-value-row">
+            <span class="metric-number" id="cardBkkRain">--</span>
+            <span class="metric-unit">มม.</span>
+          </div>
+          <div class="metric-sub" id="cardRainStatus">ความสามารถรับน้ำฝน: 60 มม./ชม.</div>
+        </div>
+        <div class="metric-badge" id="badgeRain">ปกติ</div>
+      </div>
+    </section>
+
+    <!-- Main Grid: Flood Risk Engine & Journey Map -->
+    <div class="main-dashboard-grid">
+      <!-- Left Column: Prediction Hero Card & 3-Water Breakdown -->
+      <div class="dashboard-col left-col">
+        <!-- Bangkok Flood Assessment Centerpiece -->
+        <div class="glass-panel assessment-panel">
+          <div class="panel-header">
+            <div class="panel-title">
+              <i class="fa-solid fa-chart-line text-cyan"></i>
+              <span>การประเมินความเสี่ยงน้ำท่วมกรุงเทพมหานคร</span>
+            </div>
+            <span class="time-stamp" id="calcTimestamp">คำนวณล่าสุด: กำลังโหลด...</span>
+          </div>
+
+          <div class="assessment-content">
+            <!-- Dynamic Risk Gauge -->
+            <div class="gauge-container">
+              <div class="svg-gauge-box">
+                <svg viewBox="0 0 200 120" class="gauge-svg">
+                  <!-- Arc Path background -->
+                  <path d="M 20 105 A 80 80 0 0 1 180 105" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="16" stroke-linecap="round" />
+                  <!-- Dynamic Progress Arc -->
+                  <path id="gaugeProgressArc" d="M 20 105 A 80 80 0 0 1 180 105" fill="none" stroke="url(#gaugeGradient)" stroke-width="16" stroke-linecap="round" stroke-dasharray="251.2" stroke-dashoffset="150" />
+                  <!-- Gradient Definitions -->
+                  <defs>
+                    <linearGradient id="gaugeGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                      <stop offset="0%" stop-color="#10b981" />
+                      <stop offset="45%" stop-color="#f59e0b" />
+                      <stop offset="85%" stop-color="#ef4444" />
+                    </linearGradient>
+                  </defs>
+                  <!-- Value Text -->
+                  <text x="100" y="85" text-anchor="middle" class="gauge-score-text" id="gaugeScoreText">0%</text>
+                  <text x="100" y="105" text-anchor="middle" class="gauge-caption-text">ดัชนีความเสี่ยงรวม</text>
+                </svg>
+              </div>
+
+              <div class="status-summary-box">
+                <div class="alert-status-pill" id="riskStatusPill">
+                  <span class="status-dot" id="riskDot"></span>
+                  <span id="riskStatusTitle">กำลังประเมิน...</span>
+                </div>
+                <p class="risk-explanation" id="riskExplanation">กำลังประมวลผลข้อมูลจากสถานีโทรมาตรและระดับน้ำทะเล...</p>
+              </div>
+            </div>
+
+            <!-- Floodwall Comparison Visualizer -->
+            <div class="floodwall-visualizer">
+              <div class="fw-header">
+                <span>ระดับน้ำคาดการณ์เทียบแนวคันกั้นน้ำ กทม.</span>
+                <span class="fw-numbers">
+                  <strong id="estPeakMsl">0.00</strong> / 2.50 ม. รทก.
+                </span>
+              </div>
+              <div class="fw-bar-container">
+                <div class="fw-water-level" id="fwWaterLevel" style="width: 45%;">
+                  <span class="water-level-label" id="fwWaterLevelText">+1.55 ม. รทก.</span>
+                </div>
+                <!-- Markers along the bar -->
+                <div class="fw-marker marker-outer" title="ขอบตลิ่งชุมชนนอกคันกั้นน้ำ (1.70 ม.)" style="left: 68%;">
+                  <span class="marker-tag">1.70 ม. ชุมชนนอกคันกั้นน้ำ</span>
+                </div>
+                <div class="fw-marker marker-wall" title="ระดับคันกั้นน้ำคอนกรีต กทม. (2.50 ม.)" style="left: 100%;">
+                  <span class="marker-tag">2.50 ม. แนวคันกั้นน้ำ กทม.</span>
+                </div>
+              </div>
+              <div class="fw-footer-stats">
+                <div class="fw-stat-item">
+                  <span class="stat-lbl">ระยะปลอดภัยถึงยอดคันกั้นน้ำ กทม.:</span>
+                  <strong class="stat-val text-emerald" id="clearanceWall">-- ม.</strong>
+                </div>
+                <div class="fw-stat-item">
+                  <span class="stat-lbl">ระยะถึงระดับล้นชุมชนนอกคัน:</span>
+                  <strong class="stat-val" id="clearanceOuter">-- ม.</strong>
+                </div>
+              </div>
+            </div>
+
+            <!-- "3-Waters" Decomposition Breakdown -->
+            <div class="three-waters-container">
+              <div class="section-subtitle">
+                <i class="fa-solid fa-layer-group"></i> สัดส่วนอิทธิพล "สมการ 3 น้ำสู่กรุงเทพฯ"
+              </div>
+              <div class="waters-grid">
+                <!-- Water 1: Upstream Flow -->
+                <div class="water-box">
+                  <div class="water-box-top">
+                    <span class="w-name"><i class="fa-solid fa-water text-cyan"></i> 1. น้ำเหนือ (Upstream)</span>
+                    <span class="w-val" id="wFlowVal">--</span>
+                  </div>
+                  <div class="progress-track">
+                    <div class="progress-bar bar-flow" id="barFlow" style="width: 50%;"></div>
+                  </div>
+                  <div class="w-desc">อัตราไหลผ่านบางไทร (กม.111) สู่แม่น้ำเจ้าพระยา</div>
+                </div>
+
+                <!-- Water 2: High Tide -->
+                <div class="water-box">
+                  <div class="water-box-top">
+                    <span class="w-name"><i class="fa-solid fa-arrow-trend-up text-indigo"></i> 2. น้ำหนุน (Sea Tide)</span>
+                    <span class="w-val" id="wTideVal">--</span>
+                  </div>
+                  <div class="progress-track">
+                    <div class="progress-bar bar-tide" id="barTide" style="width: 40%;"></div>
+                  </div>
+                  <div class="w-desc">ดันย้อนจากอ่าวไทย ชะลอการระบายลงทะเล</div>
+                </div>
+
+                <!-- Water 3: Rainfall -->
+                <div class="water-box">
+                  <div class="water-box-top">
+                    <span class="w-name"><i class="fa-solid fa-cloud-rain text-amber"></i> 3. น้ำฝน (Rainfall)</span>
+                    <span class="w-val" id="wRainVal">--</span>
+                  </div>
+                  <div class="progress-track">
+                    <div class="progress-bar bar-rain" id="barRain" style="width: 20%;"></div>
+                  </div>
+                  <div class="w-desc">ฝนตกสะสมในพื้นที่ กทม. และการระบายท่อ/อุโมงค์</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Vulnerable Zones Warning List -->
+            <div class="vulnerable-box" id="vulnerableBox">
+              <div class="vulnerable-title">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+                <span>พื้นที่เสี่ยงเฝ้าระวังตามระดับน้ำปัจจุบัน:</span>
+              </div>
+              <ul class="vulnerable-list" id="vulnerableList">
+                <li>กำลังโหลดข้อมูลพื้นที่เสี่ยง...</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- Water Travel Lag Time (น้ำจะมาถึง กทม. เมื่อไหร่) -->
+        <div class="glass-panel travel-panel">
+          <div class="panel-header">
+            <div class="panel-title">
+              <i class="fa-solid fa-clock-rotate-left text-amber"></i>
+              <span>เวลาการเดินทางของมวลน้ำสู่กรุงเทพมหานคร (Water Travel Time)</span>
+            </div>
+          </div>
+          <div class="travel-timeline">
+            <!-- Step 1: C.2 -->
+            <div class="timeline-step">
+              <div class="step-badge">1</div>
+              <div class="step-content">
+                <div class="step-title-row">
+                  <span class="station-name">นครสวรรค์ (C.2)</span>
+                  <span class="step-eta" id="etaC2">ประมาณ 48 - 54 ชม.</span>
+                </div>
+                <div class="step-sub">ระยะทาง ~240 กม. | ความเร็วการไหลเฉลี่ย 4-5 กม./ชม.</div>
+              </div>
+            </div>
+
+            <!-- Step 2: C.13 -->
+            <div class="timeline-step">
+              <div class="step-badge">2</div>
+              <div class="step-content">
+                <div class="step-title-row">
+                  <span class="station-name">ท้ายเขื่อนเจ้าพระยา ชัยนาท (C.13)</span>
+                  <span class="step-eta" id="etaC13">ประมาณ 32 - 38 ชม.</span>
+                </div>
+                <div class="step-sub">ระยะทาง ~160 กม. | ควบคุมการระบายลงสู่พื้นที่ตอนล่าง</div>
+              </div>
+            </div>
+
+            <!-- Step 3: C.29A -->
+            <div class="timeline-step highlight-step">
+              <div class="step-badge pulse-badge">3</div>
+              <div class="step-content">
+                <div class="step-title-row">
+                  <span class="station-name">บางไทร อยุธยา (C.29A) ⚠️ หน้าด่านสุดท้าย</span>
+                  <span class="step-eta text-cyan" id="etaC29A">ประมาณ 11 - 14 ชม.</span>
+                </div>
+                <div class="step-sub">ระยะทาง ~48 กม. | มวลน้ำปะทะเข้าเขตปทุมธานี นนทบุรี และ กทม.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Column: Interactive River Map & Simulator -->
+      <div class="dashboard-col right-col">
+        <!-- Interactive Chao Phraya River Journey Map -->
+        <div class="glass-panel map-panel">
+          <div class="panel-header">
+            <div class="panel-title">
+              <i class="fa-solid fa-map-location-dot text-cyan"></i>
+              <span>แผนที่เส้นทางการเดินทางของน้ำ (Chao Phraya River Hydrological Map)</span>
+            </div>
+            <div class="map-controls-note">
+              <span class="map-legend-item"><span class="legend-dot dot-normal"></span> ปกติ</span>
+              <span class="map-legend-item"><span class="legend-dot dot-warn"></span> เฝ้าระวัง</span>
+              <span class="map-legend-item"><span class="legend-dot dot-danger"></span> วิกฤต</span>
+            </div>
+          </div>
+          <div class="map-wrapper">
+            <div id="riverMap" class="river-map-canvas"></div>
+            <!-- Floating Flow Direction Indicator -->
+            <div class="map-flow-overlay">
+              <i class="fa-solid fa-arrow-down-long flow-pulse-icon"></i>
+              <span>ทิศทางการไหล: เหนือสู่ทะเลอ่าวไทย</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Interactive "What-If" Flood Simulator -->
+        <div class="glass-panel simulator-panel">
+          <div class="panel-header">
+            <div class="panel-title">
+              <i class="fa-solid fa-sliders text-emerald"></i>
+              <span>แบบจำลองสถานการณ์จำลอง (What-If Flood Scenario Modeler)</span>
+            </div>
+            <span class="sim-pill">Interactive Sandbox</span>
+          </div>
+
+          <p class="sim-intro">ทดลองปรับค่าตัวแปรจำลองปริมาณน้ำเหนือ น้ำทะเลหนุน และน้ำฝน เพื่อดูผลกระทบต่อระดับน้ำและโอกาสท่วม กทม. ทันที</p>
+
+          <!-- Preset Scenario Buttons -->
+          <div class="preset-buttons-row">
+            <button class="btn-preset active" data-preset="current" id="btnPresetCurrent">
+              <i class="fa-solid fa-satellite-dish"></i> ข้อมูลสดปัจจุบัน
+            </button>
+            <button class="btn-preset" data-preset="flood2022" id="btnPreset2022">
+              <i class="fa-solid fa-cloud-bolt"></i> เฝ้าระวังปี 2565
+            </button>
+            <button class="btn-preset preset-danger" data-preset="flood2011" id="btnPreset2011">
+              <i class="fa-solid fa-triangle-exclamation"></i> มหาอุทกภัยปี 2554
+            </button>
+            <button class="btn-preset" data-preset="dryseason" id="btnPresetDry">
+              <i class="fa-solid fa-sun"></i> ฤดูแล้งปกติ
+            </button>
+          </div>
+
+          <!-- Sliders Grid -->
+          <div class="sliders-grid">
+            <!-- Slider 1: Bang Sai Flow -->
+            <div class="slider-group">
+              <div class="slider-header">
+                <span class="s-label"><i class="fa-solid fa-water text-cyan"></i> ปริมาณน้ำผ่านบางไทร (C.29A)</span>
+                <span class="s-value" id="valSliderBangSai">2,600 ลบ.ม./วินาที</span>
+              </div>
+              <input type="range" id="sliderBangSai" min="300" max="4500" step="50" value="2600" class="custom-range range-cyan">
+              <div class="slider-limits">
+                <span>300 (แล้ง)</span>
+                <span class="limit-mark">2,500 (เฝ้าระวัง)</span>
+                <span class="limit-mark mark-danger">3,000+ (วิกฤต)</span>
+                <span>4,500</span>
+              </div>
+            </div>
+
+            <!-- Slider 2: Chao Phraya Dam Discharge -->
+            <div class="slider-group">
+              <div class="slider-header">
+                <span class="s-label"><i class="fa-solid fa-bridge-water text-blue"></i> การระบายเขื่อนเจ้าพระยา (C.13)</span>
+                <span class="s-value" id="valSliderDam">2,500 ลบ.ม./วินาที</span>
+              </div>
+              <input type="range" id="sliderDam" min="100" max="4000" step="50" value="2500" class="custom-range range-blue">
+              <div class="slider-limits">
+                <span>100</span>
+                <span class="limit-mark">2,000</span>
+                <span class="limit-mark mark-danger">2,700+</span>
+                <span>4,000</span>
+              </div>
+            </div>
+
+            <!-- Slider 3: High Tide -->
+            <div class="slider-group">
+              <div class="slider-header">
+                <span class="s-label"><i class="fa-solid fa-water-ladder text-indigo"></i> ระดับน้ำทะเลหนุนสูงสุด (MSL)</span>
+                <span class="s-value" id="valSliderTide">1.55 ม. รทก.</span>
+              </div>
+              <input type="range" id="sliderTide" min="0.80" max="2.50" step="0.05" value="1.55" class="custom-range range-indigo">
+              <div class="slider-limits">
+                <span>0.80 ม. (หนุนต่ำ)</span>
+                <span class="limit-mark">1.60 ม.</span>
+                <span class="limit-mark mark-danger">2.00+ ม. (หนุนสูงมาก)</span>
+                <span>2.50 ม.</span>
+              </div>
+            </div>
+
+            <!-- Slider 4: Rain in BKK -->
+            <div class="slider-group">
+              <div class="slider-header">
+                <span class="s-label"><i class="fa-solid fa-cloud-showers-heavy text-amber"></i> ฝนสะสมในพื้นที่ กทม. (24 ชม.)</span>
+                <span class="s-value" id="valSliderRain">20 มม.</span>
+              </div>
+              <input type="range" id="sliderRain" min="0" max="200" step="5" value="20" class="custom-range range-amber">
+              <div class="slider-limits">
+                <span>0 มม. (ไม่มีฝน)</span>
+                <span class="limit-mark">50 มม. (ปานกลาง)</span>
+                <span class="limit-mark mark-danger">90+ มม. (หนักมาก)</span>
+                <span>200 มม.</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Stations Data & Major Dams Section -->
+    <section class="stations-section">
+      <div class="section-nav">
+        <h2 class="section-title"><i class="fa-solid fa-list-check"></i> ตารางข้อมูลสถานีโทรมาตรตรวจวัดน้ำแม่น้ำเจ้าพระยา (Telemetry Stations)</h2>
+        <span class="badge-total-stations" id="badgeStationCount">กำลังโหลดข้อมูล...</span>
+      </div>
+
+      <div class="table-responsive glass-panel">
+        <table class="stations-table">
+          <thead>
+            <tr>
+              <th>รหัสสถานี</th>
+              <th>ชื่อสถานีตรวจวัด & ลำน้ำ</th>
+              <th>จังหวัด</th>
+              <th>ระยะห่างถึง กทม.</th>
+              <th>เวลาเดินทางสู่ กทม.</th>
+              <th>อัตราการไหล (Q)</th>
+              <th>ระดับน้ำ (ม. รทก.)</th>
+              <th>ระดับตลิ่ง (ม.)</th>
+              <th>สถานะการแจ้งเตือน</th>
+            </tr>
+          </thead>
+          <tbody id="stationsTableBody">
+            <tr>
+              <td colspan="9" class="text-center py-4">กำลังดึงข้อมูลโทรมาตรแบบเรียลไทม์...</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Key Dams Grid -->
+    <section class="dams-section">
+      <h2 class="section-title"><i class="fa-solid fa-mountain-sun"></i> สถานการณ์ 4 เขื่อนหลักลุ่มน้ำเจ้าพระยาตอนบน (Major Upstream Dams)</h2>
+      <div class="dams-grid" id="damsGrid">
+        <!-- Rendered via JS -->
+      </div>
+    </section>
+    </div> <!-- End pro-detailed-view -->
+
+    <!-- Emergency & Vulnerability Information -->
+    <footer class="app-footer glass-panel">
+      <div class="footer-col">
+        <h3><i class="fa-solid fa-phone-volume text-cyan"></i> สายด่วนแจ้งเหตุน้ำท่วม</h3>
+        <p><strong>ศูนย์ควบคุมระบบป้องกันน้ำท่วม กทม.:</strong> โทร. 1555 หรือ 0-2248-5115</p>
+        <p><strong>กรมชลประทาน (สายด่วนน้ำ):</strong> โทร. 1460 (ตลอด 24 ชั่วโมง)</p>
+        <p><strong>กรมป้องกันและบรรเทาสาธารณภัย (ปภ.):</strong> โทร. 1784</p>
+      </div>
+      <div class="footer-col">
+        <h3><i class="fa-solid fa-circle-info text-amber"></i> แหล่งข้อมูลอ้างอิงทางการ</h3>
+        <p>• สถาบันสารสนเทศทรัพยากรน้ำ (องค์การมหาชน) - สสน. / Thaiwater.net</p>
+        <p>• สำนักการระบายน้ำ กรุงเทพมหานคร (BMA Drainage Department)</p>
+        <p>• กรมอุทกศาสตร์ กองทัพเรือ (ระดับน้ำขึ้น-น้ำลงแม่น้ำเจ้าพระยา)</p>
+      </div>
+      <div class="footer-col footer-credits">
+        <p>© 2026 Bangkok Flood Intelligence Portal</p>
+        <p class="text-muted">ระบบจำลองและวิเคราะห์ข้อมูลเพื่อการเฝ้าระวังและการตัดสินใจเชิงรุก</p>
+      </div>
+    </footer>
+  </div>
+
+  <!-- Scripts -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="/js/app.js?v=3"></script>
+</body>
+</html>
