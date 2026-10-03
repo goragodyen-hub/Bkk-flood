@@ -8,6 +8,7 @@ const PORT = process.env.PORT || 4321;
 app.use(cors());
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(__dirname));
 
 // In-memory cache for external API data (TTL 5 minutes)
 const cache = {
@@ -620,6 +621,111 @@ app.get('/api/water/presets', (req, res) => {
     }
   ];
   res.json({ success: true, presets });
+});
+
+// Cache for Weather Forecast (TTL 30 minutes)
+const weatherCache = { data: null, timestamp: 0 };
+const WEATHER_CACHE_TTL = 30 * 60 * 1000;
+
+// WMO Weather Code Mapper
+function mapWmoWeather(code) {
+  switch (code) {
+    case 0:
+      return { text: 'ท้องฟ้าแจ่มใส', icon: 'fa-sun', color: '#f59e0b', rainLevel: 'none' };
+    case 1:
+    case 2:
+      return { text: 'มีเมฆบางส่วน', icon: 'fa-cloud-sun', color: '#38bdf8', rainLevel: 'low' };
+    case 3:
+      return { text: 'มีเมฆมาก', icon: 'fa-cloud', color: '#94a3b8', rainLevel: 'low' };
+    case 45:
+    case 48:
+      return { text: 'มีหมอกหนา', icon: 'fa-smog', color: '#94a3b8', rainLevel: 'none' };
+    case 51:
+    case 53:
+    case 55:
+      return { text: 'ฝนละอองเล็กน้อย', icon: 'fa-cloud-rain', color: '#38bdf8', rainLevel: 'moderate' };
+    case 61:
+    case 63:
+    case 65:
+      return { text: 'ฝนตกปานกลาง', icon: 'fa-cloud-showers-heavy', color: '#00f2fe', rainLevel: 'heavy' };
+    case 80:
+    case 81:
+    case 82:
+      return { text: 'ฝนตกหนักเป็นแห่งๆ', icon: 'fa-cloud-showers-water', color: '#f59e0b', rainLevel: 'very_heavy' };
+    case 95:
+    case 96:
+    case 99:
+      return { text: 'พายุฝนฟ้าคะนอง', icon: 'fa-cloud-bolt', color: '#ef4444', rainLevel: 'storm' };
+    default:
+      return { text: 'มีเมฆเป็นส่วนมาก', icon: 'fa-cloud-sun', color: '#38bdf8', rainLevel: 'low' };
+  }
+}
+
+// API: 7-Day Weather & Basin Rain Forecast
+app.get('/api/weather/forecast', async (req, res) => {
+  const now = Date.now();
+  if (weatherCache.data && (now - weatherCache.timestamp < WEATHER_CACHE_TTL)) {
+    return res.json({ success: true, ...weatherCache.data });
+  }
+
+  try {
+    const url = 'https://api.open-meteo.com/v1/forecast?latitude=13.75,15.67&longitude=100.50,100.12&current=temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_sum,precipitation_probability_max&timezone=Asia%2FBangkok';
+    const response = await fetch(url, { signal: AbortSignal.timeout(6000) });
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    const data = await response.json();
+
+    const parseForecast = (item, name) => {
+      const days = [];
+      const times = item.daily.time || [];
+      for (let i = 0; i < times.length; i++) {
+        const wCode = item.daily.weather_code[i];
+        const wMeta = mapWmoWeather(wCode);
+        days.push({
+          date: times[i],
+          dayName: new Date(times[i]).toLocaleDateString('th-TH', { weekday: 'short' }),
+          dateFormatted: new Date(times[i]).toLocaleDateString('th-TH', { day: 'numeric', month: 'short' }),
+          weatherCode: wCode,
+          condition: wMeta.text,
+          icon: wMeta.icon,
+          color: wMeta.color,
+          rainLevel: wMeta.rainLevel,
+          rainProb: item.daily.precipitation_probability_max[i] ?? 50,
+          precipMm: item.daily.precipitation_sum[i] ?? 0,
+          tempMax: Math.round(item.daily.temperature_2m_max[i]),
+          tempMin: Math.round(item.daily.temperature_2m_min[i])
+        });
+      }
+
+      const curMeta = mapWmoWeather(item.current.weather_code);
+      return {
+        locationName: name,
+        current: {
+          temp: Math.round(item.current.temperature_2m),
+          humidity: item.current.relative_humidity_2m,
+          windSpeed: item.current.wind_speed_10m,
+          weatherCode: item.current.weather_code,
+          condition: curMeta.text,
+          icon: curMeta.icon,
+          color: curMeta.color
+        },
+        forecast: days
+      };
+    };
+
+    const payload = {
+      bkk: parseForecast(data[0], 'กรุงเทพมหานครและปริมณฑล'),
+      central: parseForecast(data[1], 'ลุ่มน้ำเจ้าพระยาตอนบน (นครสวรรค์-ชัยนาท)'),
+      updatedAt: new Date().toISOString()
+    };
+
+    weatherCache.data = payload;
+    weatherCache.timestamp = now;
+
+    res.json({ success: true, ...payload });
+  } catch (err) {
+    console.error('Weather forecast API error:', err.message);
+    res.status(500).json({ success: false, error: err.message });
+  }
 });
 
 app.listen(PORT, () => {

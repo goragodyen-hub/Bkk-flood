@@ -6,6 +6,8 @@
 // Application State
 const state = {
   liveData: null,
+  weatherData: null,
+  activeWeatherLocation: 'bkk',
   activeParams: {
     qBangSai: 2600,
     qChaoPhrayaDam: 2500,
@@ -56,9 +58,11 @@ document.addEventListener('DOMContentLoaded', () => {
   initMap();
   setupEventListeners();
   loadLiveData();
+  loadWeatherData();
 
   // Auto-refresh every 3 minutes
   setInterval(loadLiveData, 3 * 60 * 1000);
+  setInterval(loadWeatherData, 15 * 60 * 1000);
 });
 
 // View Mode Management (Simple Mobile vs Pro Detailed)
@@ -574,6 +578,22 @@ function setupEventListeners() {
   // Refresh Button
   document.getElementById('btnRefresh').addEventListener('click', () => {
     loadLiveData();
+    loadWeatherData();
+  });
+
+  // Weather Location Tabs
+  document.getElementById('btnWeatherBkk')?.addEventListener('click', () => {
+    state.activeWeatherLocation = 'bkk';
+    document.getElementById('btnWeatherBkk').classList.add('active');
+    document.getElementById('btnWeatherCentral').classList.remove('active');
+    renderProWeather();
+  });
+
+  document.getElementById('btnWeatherCentral')?.addEventListener('click', () => {
+    state.activeWeatherLocation = 'central';
+    document.getElementById('btnWeatherCentral').classList.add('active');
+    document.getElementById('btnWeatherBkk').classList.remove('active');
+    renderProWeather();
   });
 
   // View Mode Switch Buttons
@@ -837,4 +857,196 @@ function generateStaticHydrologyData() {
     rain: { bkkAverage24h: 5.4, stationsCount: 16 },
     tide: { currentMsl: liveHighTideMsl, expectedHighTideMsl: liveHighTideMsl > 1.4 ? liveHighTideMsl : 1.72 }
   };
+}
+
+// ========================================================
+// WEATHER FORECAST MODULE (พยากรณ์อากาศและโอกาสฝนตก)
+// ========================================================
+function mapWmoWeather(code) {
+  switch (code) {
+    case 0:
+      return { text: 'ท้องฟ้าแจ่มใส', icon: 'fa-sun', color: '#f59e0b', rainLevel: 'none' };
+    case 1:
+    case 2:
+      return { text: 'มีเมฆบางส่วน', icon: 'fa-cloud-sun', color: '#38bdf8', rainLevel: 'low' };
+    case 3:
+      return { text: 'มีเมฆมาก', icon: 'fa-cloud', color: '#94a3b8', rainLevel: 'low' };
+    case 45:
+    case 48:
+      return { text: 'มีหมอกหนา', icon: 'fa-smog', color: '#94a3b8', rainLevel: 'none' };
+    case 51:
+    case 53:
+    case 55:
+      return { text: 'ฝนละอองเล็กน้อย', icon: 'fa-cloud-rain', color: '#38bdf8', rainLevel: 'moderate' };
+    case 61:
+    case 63:
+    case 65:
+      return { text: 'ฝนตกปานกลาง', icon: 'fa-cloud-showers-heavy', color: '#00f2fe', rainLevel: 'heavy' };
+    case 80:
+    case 81:
+    case 82:
+      return { text: 'ฝนตกหนักเป็นแห่งๆ', icon: 'fa-cloud-showers-water', color: '#f59e0b', rainLevel: 'very_heavy' };
+    case 95:
+    case 96:
+    case 99:
+      return { text: 'พายุฝนฟ้าคะนอง', icon: 'fa-cloud-bolt', color: '#ef4444', rainLevel: 'storm' };
+    default:
+      return { text: 'มีเมฆเป็นส่วนมาก', icon: 'fa-cloud-sun', color: '#38bdf8', rainLevel: 'low' };
+  }
+}
+
+async function loadWeatherData() {
+  let weather = null;
+
+  // 1. Try local Node backend API
+  try {
+    const res = await fetch('/api/weather/forecast', { signal: AbortSignal.timeout(3000) });
+    if (res.ok) {
+      const json = await res.json();
+      if (json.success) weather = json;
+    }
+  } catch (err) {}
+
+  // 2. Direct Open-Meteo fallback for GitHub Pages
+  if (!weather) {
+    try {
+      const url = 'https://api.open-meteo.com/v1/forecast?latitude=13.75,15.67&longitude=100.50,100.12&current=temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_sum,precipitation_probability_max&timezone=Asia%2FBangkok';
+      const response = await fetch(url, { signal: AbortSignal.timeout(6000) });
+      if (response.ok) {
+        const data = await response.json();
+        const parseForecast = (item, name) => {
+          const days = [];
+          const times = item.daily?.time || [];
+          for (let i = 0; i < times.length; i++) {
+            const wCode = item.daily.weather_code[i];
+            const wMeta = mapWmoWeather(wCode);
+            days.push({
+              date: times[i],
+              dayName: i === 0 ? 'วันนี้' : new Date(times[i]).toLocaleDateString('th-TH', { weekday: 'short' }),
+              dateFormatted: new Date(times[i]).toLocaleDateString('th-TH', { day: 'numeric', month: 'short' }),
+              weatherCode: wCode,
+              condition: wMeta.text,
+              icon: wMeta.icon,
+              color: wMeta.color,
+              rainLevel: wMeta.rainLevel,
+              rainProb: item.daily.precipitation_probability_max[i] ?? 50,
+              precipMm: item.daily.precipitation_sum[i] ?? 0,
+              tempMax: Math.round(item.daily.temperature_2m_max[i]),
+              tempMin: Math.round(item.daily.temperature_2m_min[i])
+            });
+          }
+          const curMeta = mapWmoWeather(item.current?.weather_code ?? 95);
+          return {
+            locationName: name,
+            current: {
+              temp: Math.round(item.current?.temperature_2m ?? 32),
+              humidity: item.current?.relative_humidity_2m ?? 65,
+              windSpeed: item.current?.wind_speed_10m ?? 6,
+              weatherCode: item.current?.weather_code ?? 95,
+              condition: curMeta.text,
+              icon: curMeta.icon,
+              color: curMeta.color
+            },
+            forecast: days
+          };
+        };
+
+        weather = {
+          success: true,
+          bkk: parseForecast(data[0], 'กรุงเทพมหานครและปริมณฑล'),
+          central: parseForecast(data[1], 'ลุ่มน้ำเจ้าพระยาตอนบน (นครสวรรค์-ชัยนาท)')
+        };
+      }
+    } catch (e) {
+      console.warn('Direct weather fetch failed:', e);
+    }
+  }
+
+  if (weather) {
+    state.weatherData = weather;
+    renderMobileWeather();
+    renderProWeather();
+  }
+}
+
+function renderMobileWeather() {
+  const bkk = state.weatherData?.bkk;
+  if (!bkk) return;
+
+  const cur = bkk.current;
+  const todayForecast = bkk.forecast[0];
+
+  const mWcTemp = document.getElementById('mWcTemp');
+  const mWcCond = document.getElementById('mWcCond');
+  const mWcRainProb = document.getElementById('mWcRainProb');
+
+  if (mWcTemp) mWcTemp.textContent = `${cur.temp}°C`;
+  if (mWcCond) mWcCond.innerHTML = `<i class="fa-solid ${cur.icon}" style="color:${cur.color};"></i> ${cur.condition}`;
+  if (mWcRainProb) mWcRainProb.textContent = `${todayForecast?.rainProb ?? 80}%`;
+
+  const strip = document.getElementById('mWeatherStrip');
+  if (strip && bkk.forecast) {
+    strip.innerHTML = bkk.forecast.slice(0, 5).map((f, idx) => {
+      const isToday = idx === 0;
+      const isHigh = f.rainProb >= 60;
+      return `
+        <div class="m-w-item ${isToday ? 'active-today' : ''}">
+          <span class="m-w-day">${isToday ? 'วันนี้' : f.dayName}</span>
+          <i class="fa-solid ${f.icon} m-w-icon" style="color: ${f.color};"></i>
+          <span class="m-w-temp">${f.tempMax}° / ${f.tempMin}°</span>
+          <span class="m-w-prob ${isHigh ? 'high-rain' : ''}">${f.rainProb}%</span>
+        </div>
+      `;
+    }).join('');
+  }
+}
+
+function renderProWeather() {
+  const locKey = state.activeWeatherLocation || 'bkk';
+  const data = state.weatherData?.[locKey];
+  if (!data) return;
+
+  const bannerText = document.getElementById('weatherBannerText');
+  const grid = document.getElementById('forecast7DayGrid');
+
+  // Meteorological summary banner
+  const today = data.forecast[0];
+  if (bannerText && today) {
+    if (today.rainProb >= 70) {
+      bannerText.innerHTML = `<strong>⚠️ การแจ้งเตือนสภาพอากาศ (${data.locationName}):</strong> มีโอกาสเกิดฝนตกชุกถึง <strong>${today.rainProb}%</strong> (${today.condition}) ปริมาณฝนคาดการณ์ <strong>${today.precipMm} มม.</strong> ควรเฝ้าระวังน้ำท่วมขังรอระบายและมวลน้ำสะสม`;
+    } else {
+      bannerText.innerHTML = `<strong>สภาพอากาศ (${data.locationName}):</strong> ${today.condition} โอกาสฝน ${today.rainProb}% ปริมาณฝนสะสมคาดการณ์ ${today.precipMm} มม. อุณหภูมิ ${today.tempMin}° - ${today.tempMax}°C`;
+    }
+  }
+
+  if (grid && data.forecast) {
+    grid.innerHTML = data.forecast.map((f, idx) => {
+      const isToday = idx === 0;
+      const isHigh = f.rainProb >= 60;
+      return `
+        <div class="w-day-card ${isToday ? 'today' : ''}">
+          <div class="w-card-header">
+            <span class="w-card-day">${isToday ? 'วันนี้' : f.dayName}</span>
+            <span class="w-card-date">${f.dateFormatted}</span>
+          </div>
+          <i class="fa-solid ${f.icon} w-card-icon" style="color: ${f.color};"></i>
+          <div class="w-card-cond">${f.condition}</div>
+          <div class="w-card-temp">
+            <span class="temp-max">${f.tempMax}°C</span>
+            <span class="temp-min">${f.tempMin}°C</span>
+          </div>
+          <div class="w-rain-bar-wrap">
+            <div class="w-rain-prob-label">
+              <span>โอกาสฝน</span>
+              <strong style="color: ${isHigh ? '#f87171' : 'var(--accent-blue)'};">${f.rainProb}%</strong>
+            </div>
+            <div class="w-rain-bar-track">
+              <div class="w-rain-bar-fill ${isHigh ? 'fill-high' : ''}" style="width: ${f.rainProb}%;"></div>
+            </div>
+            <span class="w-precip-mm">ฝนคาดการณ์: ${f.precipMm} มม.</span>
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
 }

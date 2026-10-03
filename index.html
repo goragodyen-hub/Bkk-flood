@@ -126,6 +126,25 @@
         </div>
       </div>
 
+      <!-- 2.5 Weather & Rain Outlook (พยากรณ์อากาศและฝน กทม.) -->
+      <div class="m-section-title">
+        <i class="fa-solid fa-cloud-bolt text-amber"></i> พยากรณ์ฝน กทม. ล่วงหน้า (Rain Outlook)
+      </div>
+      <div class="m-weather-box" id="mWeatherBox">
+        <div class="m-weather-current">
+          <div class="m-wc-left">
+            <span class="m-wc-temp" id="mWcTemp">--°C</span>
+            <span class="m-wc-cond" id="mWcCond">กำลังเชื่อมต่อพยากรณ์อากาศ...</span>
+          </div>
+          <div class="m-wc-badge" id="mWcBadge">
+            <i class="fa-solid fa-umbrella"></i> โอกาสฝน <strong id="mWcRainProb">--%</strong>
+          </div>
+        </div>
+        <div class="m-weather-strip" id="mWeatherStrip">
+          <!-- Rendered via JS -->
+        </div>
+      </div>
+
       <!-- 3. ETA Countdown Cards (น้ำจะมาถึง กทม. เมื่อไหร่?) -->
       <div class="m-section-title">
         <i class="fa-solid fa-stopwatch text-amber"></i> น้ำจะมาถึง กทม. เมื่อไหร่?
@@ -568,7 +587,35 @@
           </div>
         </div>
       </div>
-    </div>
+
+    <!-- WEATHER & BASIN RAINFALL FORECAST SECTION -->
+    <section class="weather-section glass-panel">
+      <div class="panel-header">
+        <div class="panel-title">
+          <i class="fa-solid fa-cloud-sun-rain text-amber"></i>
+          <span>พยากรณ์อากาศและโอกาสฝนตก 7 วันล่วงหน้า (Chao Phraya Basin Weather Forecast)</span>
+        </div>
+        <div class="weather-location-toggle" id="weatherLocationToggle">
+          <button class="btn-w-tab active" data-loc="bkk" id="btnWeatherBkk">
+            <i class="fa-solid fa-city"></i> กรุงเทพฯ และปริมณฑล
+          </button>
+          <button class="btn-w-tab" data-loc="central" id="btnWeatherCentral">
+            <i class="fa-solid fa-mountain-sun"></i> ลุ่มน้ำตอนบน (นครสวรรค์-ชัยนาท)
+          </button>
+        </div>
+      </div>
+
+      <div class="weather-content-wrapper">
+        <div class="weather-alert-banner" id="weatherAlertBanner">
+          <i class="fa-solid fa-cloud-bolt text-amber"></i>
+          <span id="weatherBannerText">กำลังเชื่อมต่อข้อมูลดาวเทียมและแบบจำลองสภาพอากาศ...</span>
+        </div>
+
+        <div class="forecast-7day-grid" id="forecast7DayGrid">
+          <!-- Rendered via JS -->
+        </div>
+      </div>
+    </section>
 
     <!-- Stations Data & Major Dams Section -->
     <section class="stations-section">
