@@ -2437,72 +2437,292 @@ body.mode-pro .pro-detailed-view {
 }
 
 /* ========================================================
-   PRO DETAILED VIEW - COMPREHENSIVE MOBILE RESPONSIVENESS
-   (Fix Horizontal Overflow on Screen Width <= 768px)
+   REORGANIZED RESPONSIVE LAYOUT (Mobile, Tablet, Desktop)
+   (Prevent Overflow & Streamline Mobile Experience)
    ======================================================== */
+.ambient-glow {
+  max-width: 100vw !important;
+  overflow: hidden !important;
+  pointer-events: none !important;
+}
+
+/* Header Base Grid / Layout */
+.header-main-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+}
+
+.header-quick-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.view-mode-bar {
+  width: 100%;
+}
+
+.view-mode-bar .view-mode-toggle {
+  width: 100%;
+  display: flex;
+}
+
 @media (max-width: 768px) {
-  /* Prevent full-page sideways horizontal scroll */
   html, body {
     max-width: 100vw !important;
     overflow-x: hidden !important;
-    position: relative;
+    position: relative !important;
   }
 
   .app-container {
-    padding: 12px 12px 36px !important;
-    gap: 16px !important;
+    padding: 10px 10px 32px !important;
+    gap: 14px !important;
     width: 100% !important;
     max-width: 100vw !important;
     overflow-x: hidden !important;
   }
 
-  /* Header Mobile Adaptations */
+  /* Compact Header */
   .app-header {
+    display: flex !important;
     flex-direction: column !important;
-    align-items: stretch !important;
-    gap: 12px !important;
-    padding: 14px 16px !important;
+    gap: 10px !important;
+    padding: 12px 14px !important;
+    border-radius: var(--radius-md) !important;
+  }
+
+  .header-main-row {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    width: 100% !important;
   }
 
   .header-left {
-    gap: 12px !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    min-width: 0 !important;
+    flex: 1 !important;
+  }
+
+  .app-header-logo {
+    width: 34px !important;
+    height: 34px !important;
   }
 
   .title-group h1 {
-    font-size: 1.15rem !important;
-    line-height: 1.3 !important;
+    font-size: 0.98rem !important;
+    font-weight: 800 !important;
+    line-height: 1.2 !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    margin: 0 !important;
+  }
+
+  .title-group .tag-version {
+    font-size: 0.6rem !important;
+    padding: 1px 5px !important;
   }
 
   .title-group .subtitle {
-    font-size: 0.75rem !important;
-    line-height: 1.4 !important;
+    display: none !important;
   }
 
-  .header-right {
-    flex-direction: column !important;
-    align-items: stretch !important;
-    gap: 10px !important;
+  .header-quick-actions {
+    display: flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+    flex-shrink: 0 !important;
+  }
+
+  .live-pill {
+    padding: 4px 8px !important;
+    font-size: 0.7rem !important;
+    gap: 5px !important;
+    white-space: nowrap !important;
+  }
+
+  #liveStatusText {
+    display: none !important;
+  }
+
+  .live-pill::after {
+    content: "LIVE";
+    font-size: 0.68rem;
+    font-weight: 700;
+    color: var(--accent-emerald);
+  }
+
+  .btn-refresh {
+    width: 32px !important;
+    height: 32px !important;
+    padding: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    border-radius: var(--radius-sm) !important;
+  }
+
+  .btn-refresh-text {
+    display: none !important;
+  }
+
+  .header-quick-actions .btn-install-app {
+    display: none !important;
+  }
+
+  .view-mode-bar {
     width: 100% !important;
   }
 
   .view-mode-toggle {
     width: 100% !important;
     display: flex !important;
+    background: rgba(10, 19, 38, 0.9) !important;
+    border: 1px solid rgba(0, 242, 254, 0.25) !important;
+    border-radius: var(--radius-full) !important;
+    padding: 3px !important;
   }
 
   .btn-mode {
     flex: 1 !important;
     justify-content: center !important;
+    padding: 8px 6px !important;
+    font-size: 0.78rem !important;
+    font-weight: 700 !important;
+    border-radius: var(--radius-full) !important;
+  }
+
+  /* ----------------------------------------------------
+     SIMPLE VIEW (ดูอย่างง่าย) - Streamlined Mobile First
+     ---------------------------------------------------- */
+  .simple-mobile-view {
+    gap: 14px !important;
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  .m-hero-card {
+    padding: 16px 14px !important;
+    gap: 12px !important;
+  }
+
+  .m-hero-question {
+    font-size: 1.25rem !important;
+    margin: 0 !important;
+  }
+
+  .m-hero-answer {
+    font-size: 0.92rem !important;
+    padding: 12px 14px !important;
+    line-height: 1.5 !important;
+  }
+
+  .m-clearance-box {
+    padding: 12px 14px !important;
+    gap: 6px !important;
+  }
+
+  /* 3 Vitals: Ultra-compact cards */
+  .m-vitals-grid {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 8px !important;
+  }
+
+  .m-vital-card {
+    padding: 12px 14px !important;
+    border-radius: var(--radius-md) !important;
+  }
+
+  .m-vital-val {
+    font-size: 1.4rem !important;
+  }
+
+  .m-vital-desc {
+    font-size: 0.72rem !important;
+  }
+
+  /* ETA Cards: compact grid */
+  .m-eta-cards {
+    display: grid !important;
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 6px !important;
+  }
+
+  .m-eta-card {
+    padding: 10px 8px !important;
+    text-align: center !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 4px !important;
+  }
+
+  .m-eta-place strong {
+    font-size: 0.74rem !important;
+    line-height: 1.25 !important;
+    display: -webkit-box !important;
+    -webkit-line-clamp: 2 !important;
+    -webkit-box-orient: vertical !important;
+    overflow: hidden !important;
+  }
+
+  .m-eta-place span {
+    font-size: 0.62rem !important;
+  }
+
+  .m-eta-time {
+    font-size: 0.85rem !important;
+    font-weight: 800 !important;
+  }
+
+  /* Nonthaburi Mobile Box */
+  .m-nonthaburi-box {
+    padding: 14px 12px !important;
+    gap: 12px !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  .m-nb-title {
+    font-size: 0.95rem !important;
+  }
+
+  .m-nb-summary {
+    font-size: 0.78rem !important;
     padding: 8px 10px !important;
+  }
+
+  .m-nb-sensor-card {
+    padding: 9px 11px !important;
+  }
+
+  .m-nb-sc-top {
     font-size: 0.8rem !important;
   }
 
-  .live-pill, .btn-refresh, .btn-install-app {
-    width: 100% !important;
-    justify-content: center !important;
+  .btn-cctv-feed {
+    padding: 8px 10px !important;
+    gap: 10px !important;
   }
 
-  /* Pro Detailed View: strict container width */
+  .btn-cctv-feed strong {
+    font-size: 0.76rem !important;
+  }
+
+  .btn-cctv-feed span {
+    font-size: 0.65rem !important;
+  }
+
+  /* ----------------------------------------------------
+     PRO VIEW (วิเคราะห์ละเอียด) - Responsive Dashboard
+     ---------------------------------------------------- */
   .pro-detailed-view {
     width: 100% !important;
     max-width: 100% !important;
@@ -2510,31 +2730,73 @@ body.mode-pro .pro-detailed-view {
     overflow-x: hidden !important;
     display: flex !important;
     flex-direction: column !important;
-    gap: 20px !important;
+    gap: 16px !important;
   }
 
-  /* 1. Metrics Ribbon: Stack cards vertically with 100% width */
+  /* 1. Metrics Ribbon: 2x2 Grid (Saved ~300px vertical space!) */
   .metrics-ribbon {
-    grid-template-columns: 1fr !important;
-    gap: 12px !important;
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 8px !important;
     width: 100% !important;
     min-width: 0 !important;
   }
 
   .metric-card {
-    padding: 14px 16px !important;
+    padding: 10px 12px !important;
     width: 100% !important;
     min-width: 0 !important;
+    border-radius: var(--radius-md) !important;
+    gap: 3px !important;
+  }
+
+  .metric-header {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+  }
+
+  .metric-header span {
+    font-size: 0.72rem !important;
+    line-height: 1.25 !important;
+    max-width: 72% !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+  }
+
+  .metric-value-row {
+    display: flex !important;
+    align-items: baseline !important;
+    gap: 4px !important;
   }
 
   .metric-number {
-    font-size: 1.45rem !important;
+    font-size: 1.22rem !important;
+    line-height: 1.2 !important;
   }
 
-  /* 2. Main Dashboard Grid: Stack left and right columns */
+  .metric-unit {
+    font-size: 0.62rem !important;
+  }
+
+  .metric-status-sub {
+    font-size: 0.64rem !important;
+    line-height: 1.25 !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+  }
+
+  .metric-badge {
+    font-size: 0.6rem !important;
+    padding: 2px 6px !important;
+  }
+
+  /* 2. Main Dashboard Column stacking */
   .main-dashboard-grid {
     grid-template-columns: 100% !important;
-    gap: 20px !important;
+    gap: 16px !important;
     width: 100% !important;
     min-width: 0 !important;
   }
@@ -2543,34 +2805,30 @@ body.mode-pro .pro-detailed-view {
     width: 100% !important;
     min-width: 0 !important;
     max-width: 100% !important;
-    gap: 20px !important;
+    gap: 16px !important;
   }
 
   .glass-panel {
-    padding: 16px 14px !important;
+    padding: 14px 12px !important;
     width: 100% !important;
     max-width: 100% !important;
     min-width: 0 !important;
     overflow-x: hidden !important;
   }
 
-  /* 3. Panel Header: Wrap title and controls on mobile */
+  /* 3. Panel Header */
   .panel-header {
     flex-direction: column !important;
     align-items: flex-start !important;
-    gap: 10px !important;
-    margin-bottom: 14px !important;
-    padding-bottom: 10px !important;
+    gap: 8px !important;
+    margin-bottom: 12px !important;
+    padding-bottom: 8px !important;
     width: 100% !important;
-    min-width: 0 !important;
   }
 
   .panel-title {
-    font-size: 0.95rem !important;
-    line-height: 1.4 !important;
-    word-break: break-word !important;
-    overflow-wrap: anywhere !important;
-    white-space: normal !important;
+    font-size: 0.92rem !important;
+    line-height: 1.35 !important;
     width: 100% !important;
   }
 
@@ -2579,222 +2837,193 @@ body.mode-pro .pro-detailed-view {
     grid-template-columns: 1fr !important;
     justify-items: center !important;
     text-align: center !important;
-    padding: 14px !important;
-    gap: 16px !important;
+    padding: 12px 10px !important;
+    gap: 14px !important;
     width: 100% !important;
-    min-width: 0 !important;
   }
 
-  /* 5. 3 Waters Grid */
+  .gauge-circle-wrap {
+    width: 120px !important;
+    height: 120px !important;
+  }
+
+  .gauge-svg {
+    width: 120px !important;
+    height: 120px !important;
+  }
+
+  .gauge-number {
+    font-size: 1.6rem !important;
+  }
+
+  .gauge-label {
+    font-size: 0.65rem !important;
+  }
+
+  .floodwall-visualizer-box {
+    width: 100% !important;
+    max-width: 100% !important;
+    overflow: hidden !important;
+    padding: 12px 10px !important;
+  }
+
+  .floodwall-track {
+    overflow: hidden !important;
+  }
+
+  .marker-tag {
+    font-size: 0.62rem !important;
+    max-width: 90px !important;
+    white-space: normal !important;
+    right: 0 !important;
+  }
+
+  /* 5. 3 Waters Grid: 3-column compact strip */
   .waters-grid {
-    grid-template-columns: 1fr !important;
-    gap: 10px !important;
+    display: grid !important;
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 6px !important;
     width: 100% !important;
-    min-width: 0 !important;
   }
 
-  .vulnerable-box {
-    padding: 12px 14px !important;
-    word-break: break-word !important;
-    overflow-wrap: anywhere !important;
+  .water-item {
+    padding: 8px 6px !important;
+    text-align: center !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    gap: 4px !important;
   }
 
-  .vulnerable-list {
-    padding-left: 18px !important;
-    font-size: 0.75rem !important;
+  .water-item-header {
+    flex-direction: column !important;
+    gap: 2px !important;
+    font-size: 0.68rem !important;
+  }
+
+  .water-item-header strong {
+    font-size: 0.85rem !important;
   }
 
   /* 6. Travel Timeline */
   .timeline-step {
-    padding: 12px 10px !important;
-    gap: 10px !important;
-    align-items: flex-start !important;
-    width: 100% !important;
-    min-width: 0 !important;
+    padding: 10px 8px !important;
+    gap: 8px !important;
   }
 
   .step-title-row {
     flex-direction: column !important;
     align-items: flex-start !important;
-    gap: 3px !important;
+    gap: 2px !important;
   }
 
   .step-sub {
-    font-size: 0.7rem !important;
-    line-height: 1.35 !important;
+    font-size: 0.68rem !important;
   }
 
   /* 7. Map Panel & Controls */
   .map-wrapper {
-    height: 280px !important;
+    height: 250px !important;
     width: 100% !important;
-    min-width: 0 !important;
   }
 
-  .map-controls-note {
-    flex-wrap: wrap !important;
-    gap: 8px !important;
-    font-size: 0.7rem !important;
-  }
-
-  /* 8. What-If Simulator: 2x2 grid for Presets & 1-column Sliders */
-  .sim-intro {
-    font-size: 0.78rem !important;
-    line-height: 1.45 !important;
-    margin-bottom: 14px !important;
-  }
-
+  /* 8. What-If Simulator: 2x2 grid for Presets */
   .preset-buttons-row {
     display: grid !important;
     grid-template-columns: 1fr 1fr !important;
-    gap: 8px !important;
-    width: 100% !important;
-    min-width: 0 !important;
+    gap: 6px !important;
   }
 
   .btn-preset {
-    padding: 9px 6px !important;
-    font-size: 0.72rem !important;
-    justify-content: center !important;
-    text-align: center !important;
-    white-space: normal !important;
-    line-height: 1.25 !important;
-    width: 100% !important;
+    padding: 8px 4px !important;
+    font-size: 0.7rem !important;
+    line-height: 1.2 !important;
   }
 
   .sliders-grid {
     grid-template-columns: 1fr !important;
-    gap: 16px !important;
-    width: 100% !important;
-    min-width: 0 !important;
-  }
-
-  .slider-header {
-    flex-wrap: wrap !important;
-    gap: 4px !important;
-  }
-
-  .s-label {
-    font-size: 0.78rem !important;
-  }
-
-  .s-value {
-    font-size: 0.75rem !important;
-  }
-
-  .slider-limits {
-    font-size: 0.62rem !important;
-    flex-wrap: wrap !important;
-    gap: 4px !important;
-  }
-
-  /* 9. Weather Forecast Section */
-  .weather-section .panel-header {
-    flex-direction: column !important;
-    align-items: stretch !important;
     gap: 12px !important;
   }
 
-  .weather-location-toggle {
-    width: 100% !important;
-    display: flex !important;
-  }
-
-  .btn-w-tab {
-    flex: 1 !important;
-    justify-content: center !important;
-    text-align: center !important;
-    font-size: 0.72rem !important;
-    padding: 7px 4px !important;
-  }
-
-  /* 7-day forecast cards: horizontal swipeable scroll track */
+  /* 9. Weather Forecast Section */
   .forecast-7day-grid {
-    display: flex !important;
-    overflow-x: auto !important;
-    -webkit-overflow-scrolling: touch !important;
-    scroll-snap-type: x mandatory !important;
-    gap: 10px !important;
-    padding-bottom: 10px !important;
-    width: 100% !important;
-    min-width: 0 !important;
+    gap: 8px !important;
   }
 
   .w-day-card {
-    flex: 0 0 120px !important;
-    min-width: 120px !important;
-    scroll-snap-align: start !important;
-    padding: 12px 8px !important;
+    flex: 0 0 108px !important;
+    min-width: 108px !important;
+    padding: 10px 6px !important;
   }
 
   /* 10. Stations Table Section */
   .stations-section {
     width: 100% !important;
-    max-width: 100% !important;
-    min-width: 0 !important;
     overflow-x: hidden !important;
-  }
-
-  .section-nav {
-    flex-direction: column !important;
-    align-items: flex-start !important;
-    gap: 8px !important;
-    width: 100% !important;
-  }
-
-  .section-title {
-    font-size: 0.95rem !important;
-    line-height: 1.4 !important;
-    word-break: break-word !important;
-    overflow-wrap: anywhere !important;
   }
 
   .table-responsive {
     width: 100% !important;
-    max-width: 100% !important;
     overflow-x: auto !important;
     -webkit-overflow-scrolling: touch !important;
-    display: block !important;
-    border-radius: var(--radius-md) !important;
   }
 
   .stations-table {
-    min-width: 720px !important;
-    width: 100% !important;
+    min-width: 680px !important;
   }
 
-  /* 11. Upstream Dams Section */
-  .dams-section {
-    width: 100% !important;
-    min-width: 0 !important;
-  }
-
+  /* 11. Upstream Dams Section: 2 columns */
   .dams-grid {
-    grid-template-columns: 1fr !important;
-    gap: 12px !important;
-    width: 100% !important;
-    min-width: 0 !important;
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 8px !important;
+  }
+
+  .dam-card {
+    padding: 10px 10px !important;
+    gap: 6px !important;
+  }
+
+  .dam-name {
+    font-size: 0.8rem !important;
+  }
+
+  .dam-river {
+    font-size: 0.65rem !important;
+  }
+
+  .dam-percent-badge {
+    font-size: 0.75rem !important;
+  }
+
+  .dam-metrics-row {
+    font-size: 0.62rem !important;
+    flex-direction: column !important;
+    gap: 2px !important;
   }
 
   /* 12. Nonthaburi Special Section */
   .nonthaburi-pro-section {
     width: 100% !important;
     max-width: 100% !important;
-    min-width: 0 !important;
-    overflow-x: hidden !important;
     padding: 14px 12px !important;
   }
 
   .nb-pro-grid {
     grid-template-columns: 1fr !important;
-    gap: 16px !important;
+    gap: 14px !important;
     width: 100% !important;
   }
 
   .nb-rb-top {
     flex-direction: column !important;
     align-items: flex-start !important;
-    gap: 8px !important;
+    gap: 6px !important;
+  }
+
+  .nb-rb-text {
+    font-size: 0.78rem !important;
+    line-height: 1.45 !important;
   }
 
   .nb-stations-subtable {
@@ -2804,35 +3033,36 @@ body.mode-pro .pro-detailed-view {
   }
 
   .nb-sub-row {
-    grid-template-columns: 1.4fr 1fr 1fr 1fr !important;
-    font-size: 0.74rem !important;
-    padding: 10px 8px !important;
-    min-width: 440px !important;
+    grid-template-columns: 1.6fr 1fr 1fr 1fr 1fr !important;
+    font-size: 0.72rem !important;
+    padding: 9px 8px !important;
+    min-width: 460px !important;
   }
 
   .cctv-card-link {
-    padding: 10px !important;
+    padding: 9px 10px !important;
+    gap: 10px !important;
   }
 
-  /* Mobile Nonthaburi Box */
-  .m-nonthaburi-box {
-    width: 100% !important;
-    max-width: 100% !important;
-    box-sizing: border-box !important;
+  .cctv-icon-box {
+    width: 32px !important;
+    height: 32px !important;
+    font-size: 15px !important;
   }
 
-  .m-nb-header {
-    flex-direction: column !important;
-    align-items: flex-start !important;
-    gap: 8px !important;
+  .cctv-info strong {
+    font-size: 0.78rem !important;
+  }
+
+  .cctv-info p {
+    font-size: 0.68rem !important;
   }
 
   /* Footer */
   .app-footer {
     grid-template-columns: 1fr !important;
-    padding: 18px 14px !important;
-    gap: 16px !important;
-    text-align: left !important;
+    padding: 16px 14px !important;
+    gap: 14px !important;
   }
 }
 
