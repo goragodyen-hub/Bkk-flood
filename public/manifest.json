@@ -1,0 +1,50 @@
+{
+  "name": "BKK Flood Intelligence - ติดตามมวลน้ำ & คาดการณ์น้ำท่วม กทม.",
+  "short_name": "Bkk Flood",
+  "description": "ระบบวิเคราะห์และเฝ้าระวังมวลน้ำเหนือตามลุ่มน้ำเจ้าพระยาก่อนเข้าสู่กรุงเทพมหานคร พร้อมคำนวณความเสี่ยงน้ำท่วม 3 น้ำ",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#061023",
+  "theme_color": "#0c1e3d",
+  "categories": ["weather", "utilities", "news"],
+  "icons": [
+    {
+      "src": "./icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "./icons/icon-maskable-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "./icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "./icons/icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "./icons/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "./icons/favicon.png",
+      "sizes": "64x64",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}

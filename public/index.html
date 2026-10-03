@@ -8,9 +8,19 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Prompt:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- PWA & Mobile Web App Meta Tags -->
+  <link rel="manifest" href="./manifest.json">
+  <link rel="icon" type="image/png" sizes="64x64" href="./icons/favicon.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="./icons/apple-touch-icon.png">
+  <meta name="theme-color" content="#061023">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Bkk Flood">
+
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
-  <link rel="stylesheet" href="./css/style.css?v=5">
+  <link rel="stylesheet" href="./css/style.css?v=6">
 </head>
 <body>
   <!-- Background Glow Accents -->
@@ -23,7 +33,7 @@
     <header class="app-header">
       <div class="header-left">
         <div class="logo-badge">
-          <i class="fa-solid fa-water-ladder logo-icon"></i>
+          <img src="./logo.png" alt="BKK Flood Logo" class="app-header-logo">
           <span class="pulse-ring"></span>
         </div>
         <div class="title-group">
@@ -42,6 +52,12 @@
           </button>
         </div>
 
+        <!-- PWA Install Button -->
+        <button id="btnInstallApp" class="btn-install-app" style="display: none;" title="ติดตั้งแอปบนอุปกรณ์นี้ (PWA)">
+          <i class="fa-solid fa-circle-arrow-down"></i>
+          <span>ติดตั้งแอป</span>
+        </button>
+
         <div class="live-pill">
           <span class="live-indicator"></span>
           <span id="liveStatusText">กำลังเชื่อมต่อ API สด...</span>
@@ -55,6 +71,20 @@
 
     <!-- MOBILE SIMPLE VIEW (ดูอย่างง่าย - กระชับ ชัดเจน ไม่ซับซ้อน) -->
     <section class="simple-mobile-view" id="simpleMobileView">
+      <!-- PWA Mobile Install Banner -->
+      <div class="m-install-banner" id="mInstallBanner" style="display: none;">
+        <div class="m-install-left">
+          <img src="./icons/icon-192.png" alt="App Icon" class="m-install-logo">
+          <div class="m-install-text">
+            <strong>ติดตั้ง BKK Flood บนมือถือ</strong>
+            <span>เข้าถึงสะดวกรวดเร็ว เปิดดูได้ทันที</span>
+          </div>
+        </div>
+        <button class="btn-install-sm" id="mBtnInstall">
+          <i class="fa-solid fa-download"></i> ติดตั้ง
+        </button>
+      </div>
+
       <!-- 1. Direct Answer Card: กทม. จะท่วมหรือไม่? -->
       <div class="m-hero-card" id="mHeroCard">
         <div class="m-hero-top">

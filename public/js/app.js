@@ -1050,3 +1050,60 @@ function renderProWeather() {
     }).join('');
   }
 }
+
+// ==========================================
+// PWA Service Worker & Install Prompt Handler
+// ==========================================
+let deferredPrompt = null;
+
+// Register Service Worker
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    // Relative path works on both localhost root and GitHub Pages subpath
+    navigator.serviceWorker.register('./sw.js')
+      .then((registration) => {
+        console.log('HydroBangkok PWA: ServiceWorker registered successfully with scope:', registration.scope);
+      })
+      .catch((error) => {
+        console.warn('HydroBangkok PWA: ServiceWorker registration failed:', error);
+      });
+  });
+}
+
+// Capture BeforeInstallPrompt
+window.addEventListener('beforeinstallprompt', (e) => {
+  // Prevent Chrome 67 and earlier from automatically showing prompt
+  e.preventDefault();
+  // Stash the event so it can be triggered later
+  deferredPrompt = e;
+
+  const btnInstall = document.getElementById('btnInstallApp');
+  const mBanner = document.getElementById('mInstallBanner');
+  const mBtnInstall = document.getElementById('mBtnInstall');
+
+  if (btnInstall) btnInstall.style.display = 'inline-flex';
+  if (mBanner) mBanner.style.display = 'flex';
+
+  const triggerInstall = async () => {
+    if (!deferredPrompt) return;
+    deferredPrompt.prompt();
+    const { outcome } = await deferredPrompt.userChoice;
+    console.log('PWA user choice outcome:', outcome);
+    deferredPrompt = null;
+    if (btnInstall) btnInstall.style.display = 'none';
+    if (mBanner) mBanner.style.display = 'none';
+  };
+
+  if (btnInstall) btnInstall.onclick = triggerInstall;
+  if (mBtnInstall) mBtnInstall.onclick = triggerInstall;
+});
+
+// App Installed Notification
+window.addEventListener('appinstalled', () => {
+  console.log('HydroBangkok PWA: Installed to homescreen / desktop successfully!');
+  const btnInstall = document.getElementById('btnInstallApp');
+  const mBanner = document.getElementById('mInstallBanner');
+  if (btnInstall) btnInstall.style.display = 'none';
+  if (mBanner) mBanner.style.display = 'none';
+});
+

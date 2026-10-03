@@ -117,14 +117,118 @@ body {
   position: relative;
   width: 48px;
   height: 48px;
-  background: linear-gradient(135deg, #0284c7, #00f2fe);
+  background: linear-gradient(135deg, #071938, #0f2d5c);
+  border: 1.5px solid rgba(0, 242, 254, 0.4);
   border-radius: 14px;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #fff;
-  font-size: 22px;
-  box-shadow: var(--shadow-glow-cyan);
+  box-shadow: 0 0 20px rgba(0, 242, 254, 0.25);
+  overflow: visible;
+}
+
+.app-header-logo {
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+  filter: drop-shadow(0 0 6px rgba(0, 242, 254, 0.8));
+  z-index: 2;
+  transition: transform 0.3s ease;
+}
+
+.logo-badge:hover .app-header-logo {
+  transform: scale(1.08);
+}
+
+/* PWA Install Button */
+.btn-install-app {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: linear-gradient(135deg, rgba(14, 165, 233, 0.2), rgba(0, 242, 254, 0.3));
+  border: 1px solid rgba(0, 242, 254, 0.5);
+  border-radius: 10px;
+  color: #00f2fe;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 0 12px rgba(0, 242, 254, 0.2);
+}
+
+.btn-install-app:hover {
+  background: linear-gradient(135deg, rgba(14, 165, 233, 0.35), rgba(0, 242, 254, 0.45));
+  color: #ffffff;
+  transform: translateY(-1px);
+  box-shadow: 0 0 18px rgba(0, 242, 254, 0.4);
+}
+
+/* Mobile Install Banner */
+.m-install-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  background: linear-gradient(135deg, rgba(12, 30, 61, 0.85), rgba(6, 19, 41, 0.95));
+  border: 1px solid rgba(0, 242, 254, 0.35);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4), 0 0 15px rgba(0, 242, 254, 0.15);
+  border-radius: 16px;
+  padding: 12px 16px;
+  margin-bottom: 16px;
+}
+
+.m-install-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.m-install-logo {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 242, 254, 0.3);
+  object-fit: cover;
+}
+
+.m-install-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.m-install-text strong {
+  font-size: 13px;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.m-install-text span {
+  font-size: 11px;
+  color: #94a3b8;
+}
+
+.btn-install-sm {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  background: linear-gradient(135deg, #0284c7, #00f2fe);
+  border: none;
+  border-radius: 8px;
+  color: #061329;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  box-shadow: 0 0 12px rgba(0, 242, 254, 0.4);
+  transition: transform 0.15s ease;
+}
+
+.btn-install-sm:active {
+  transform: scale(0.96);
 }
 
 .pulse-ring {

@@ -6,7 +6,8 @@ const app = express();
 const PORT = process.env.PORT || 4321;
 
 app.use(cors());
-app.use(express.json());
+app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ limit: '50mb', extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.static(__dirname));
 
@@ -726,6 +727,18 @@ app.get('/api/weather/forecast', async (req, res) => {
     console.error('Weather forecast API error:', err.message);
     res.status(500).json({ success: false, error: err.message });
   }
+});
+
+// API: Save Generated Icons
+app.post('/api/save-icon', express.json({ limit: '20mb' }), (req, res) => {
+  const { filename, data } = req.body;
+  if (!filename || !data) return res.status(400).json({ error: 'Missing parameters' });
+  const base64Data = data.replace(/^data:image\/\w+;base64,/, '');
+  const buffer = Buffer.from(base64Data, 'base64');
+  const fs = require('fs');
+  fs.writeFileSync(path.join(__dirname, 'icons', filename), buffer);
+  fs.writeFileSync(path.join(__dirname, 'public', 'icons', filename), buffer);
+  res.json({ success: true, filename });
 });
 
 app.listen(PORT, () => {
