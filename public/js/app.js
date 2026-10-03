@@ -59,6 +59,7 @@ document.addEventListener('DOMContentLoaded', () => {
   setupEventListeners();
   loadLiveData();
   loadWeatherData();
+  initCctvStreams();
 
   // Auto-refresh every 3 minutes
   setInterval(loadLiveData, 3 * 60 * 1000);
@@ -1271,4 +1272,97 @@ window.addEventListener('appinstalled', () => {
   if (btnInstall) btnInstall.style.display = 'none';
   if (mBanner) mBanner.style.display = 'none';
 });
+
+// ==========================================
+// LIVE CCTV HLS STREAM PLAYER MODULE
+// ==========================================
+// Official Nonthaburi Municipality Live Stream (ท่าน้ำนนทบุรี - ท่าข้ามฟากบางศรีเมือง ตรงข้ามวัดเฉลิมพระเกียรติฯ)
+const NONTHABURI_CCTV_HLS_URL = 'https://stream.firsttech.co.th/live/nakornnont.stream/index.m3u8';
+
+function initCctvStreams() {
+  const setupPlayer = (videoId, overlayId, playBtnId, reloadBtnId) => {
+    const video = document.getElementById(videoId);
+    const overlay = document.getElementById(overlayId);
+    const playBtn = document.getElementById(playBtnId);
+    const reloadBtn = document.getElementById(reloadBtnId);
+
+    if (!video) return;
+
+    const startStream = () => {
+      if (typeof Hls !== 'undefined' && Hls.isSupported()) {
+        if (video._hls) {
+          video._hls.destroy();
+        }
+        const hls = new Hls({
+          enableWorker: true,
+          lowLatencyMode: true,
+          backBufferLength: 30
+        });
+        hls.loadSource(NONTHABURI_CCTV_HLS_URL);
+        hls.attachMedia(video);
+        hls.on(Hls.Events.MANIFEST_PARSED, () => {
+          video.play().catch(e => console.log('CCTV play auto blocked:', e));
+        });
+        hls.on(Hls.Events.ERROR, (event, data) => {
+          if (data.fatal) {
+            console.warn('HLS stream error:', data.type, data.details);
+            switch (data.type) {
+              case Hls.ErrorTypes.NETWORK_ERROR:
+                hls.startLoad();
+                break;
+              case Hls.ErrorTypes.MEDIA_ERROR:
+                hls.recoverMediaError();
+                break;
+              default:
+                hls.destroy();
+                break;
+            }
+          }
+        });
+        video._hls = hls;
+      } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+        // Native HLS for Safari / iOS devices
+        video.src = NONTHABURI_CCTV_HLS_URL;
+        video.addEventListener('loadedmetadata', () => {
+          video.play().catch(e => console.log('Native CCTV play error:', e));
+        });
+      }
+
+      if (overlay) {
+        overlay.classList.add('hidden');
+      }
+    };
+
+    const reloadStream = () => {
+      startStream();
+    };
+
+    if (playBtn) {
+      playBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        startStream();
+      });
+    }
+
+    if (overlay) {
+      overlay.addEventListener('click', () => {
+        startStream();
+      });
+    }
+
+    if (reloadBtn) {
+      reloadBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        reloadStream();
+      });
+    }
+  };
+
+  // Mobile View CCTV Player
+  setupPlayer('mCctvVideo', 'mCctvOverlay', 'mBtnPlayCctv', 'mBtnReloadCctv');
+
+  // Pro View CCTV Player
+  setupPlayer('proCctvVideo', 'proCctvOverlay', 'proBtnPlayCctv', 'proBtnReloadCctv');
+}
+
 

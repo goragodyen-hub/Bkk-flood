@@ -258,16 +258,35 @@
             <span class="live-dot-pulse"></span>
           </div>
 
-          <div class="m-nb-cctv-links">
-            <a href="https://nkndatamap.nakornnont.go.th/public" target="_blank" rel="noopener" class="btn-cctv-feed">
-              <i class="fa-solid fa-camera"></i>
-              <div>
-                <strong>CCTV เทศบาลนครนนทบุรี (ท่าน้ำนนท์)</strong>
-                <span>ส่องระดับน้ำเจ้าพระยา & ท่าเรือ ตรงข้ามวัดเฉลิมฯ</span>
+          <!-- Live Embedded Video Player (Nonthaburi Riverfront & Bang Si Mueang Ferry) -->
+          <div class="cctv-live-player-box">
+            <div class="cctv-player-screen" id="mCctvScreen">
+              <video id="mCctvVideo" class="cctv-video-el" playsinline muted controls preload="none"></video>
+              <div class="cctv-overlay" id="mCctvOverlay">
+                <span class="cctv-live-tag"><span class="live-dot-pulse"></span> ภาพสด LIVE 24 ชม.</span>
+                <button type="button" class="btn-play-stream" id="mBtnPlayCctv">
+                  <i class="fa-solid fa-play"></i> แตะเพื่อดูภาพสดริมน้ำ
+                </button>
+                <span class="cctv-subnote"><i class="fa-solid fa-location-dot text-cyan"></i> ท่าน้ำนนทบุรี - ท่าข้ามบางศรีเมือง (ตรงข้ามวัดเฉลิมฯ)</span>
               </div>
-              <i class="fa-solid fa-arrow-up-right-from-square cctv-ext"></i>
-            </a>
+            </div>
+            <div class="cctv-player-bar">
+              <div class="cctv-stream-info">
+                <span class="cctv-status-dot online"></span>
+                <span>กล้องเทศบาลนครนนท์ (สัญญาณสด HLS)</span>
+              </div>
+              <div class="cctv-actions">
+                <button type="button" class="btn-cctv-ctrl" id="mBtnReloadCctv" title="โหลดสัญญาณใหม่">
+                  <i class="fa-solid fa-rotate-right"></i> รีเฟรช
+                </button>
+                <a href="https://nkndatamap.nakornnont.go.th/public" target="_blank" rel="noopener" class="cctv-ext-badge" title="เปิดแผนที่เทศบาล">
+                  <i class="fa-solid fa-up-right-from-square"></i>
+                </a>
+              </div>
+            </div>
+          </div>
 
+          <div class="m-nb-cctv-links">
             <a href="https://traffic.longdo.com/" target="_blank" rel="noopener" class="btn-cctv-feed">
               <i class="fa-solid fa-bridge-water"></i>
               <div>
@@ -803,6 +822,35 @@
               <span>กล้องวงจรปิด CCTV ถ่ายทอดสดริมน้ำในพื้นที่</span>
               <span class="live-dot-pulse"></span>
             </div>
+
+            <!-- Live Pro Embedded Player -->
+            <div class="cctv-live-player-box pro">
+              <div class="cctv-player-screen" id="proCctvScreen">
+                <video id="proCctvVideo" class="cctv-video-el" playsinline muted controls preload="none"></video>
+                <div class="cctv-overlay" id="proCctvOverlay">
+                  <span class="cctv-live-tag"><span class="live-dot-pulse"></span> สตรีมสด LIVE 24 ชม.</span>
+                  <button type="button" class="btn-play-stream" id="proBtnPlayCctv">
+                    <i class="fa-solid fa-play"></i> คลิกเพื่อเริ่มรับชมภาพสด
+                  </button>
+                  <span class="cctv-subnote"><i class="fa-solid fa-location-dot text-cyan"></i> ท่าน้ำนนทบุรี - ท่าข้ามบางศรีเมือง (ตรงข้ามวัดเฉลิมฯ)</span>
+                </div>
+              </div>
+              <div class="cctv-player-bar">
+                <div class="cctv-stream-info">
+                  <span class="cctv-status-dot online"></span>
+                  <span>เทศบาลนครนนทบุรี (H.264 / HLS Stream)</span>
+                </div>
+                <div class="cctv-actions">
+                  <button type="button" class="btn-cctv-ctrl" id="proBtnReloadCctv" title="รีเฟรชสัญญาณ">
+                    <i class="fa-solid fa-rotate-right"></i> รีโหลด
+                  </button>
+                  <a href="https://nkndatamap.nakornnont.go.th/public" target="_blank" rel="noopener" class="cctv-ext-badge" title="เปิดแผนที่เทศบาล">
+                    <i class="fa-solid fa-up-right-from-square"></i> ผังกล้องเทศบาล
+                  </a>
+                </div>
+              </div>
+            </div>
+
             <div class="cctv-links-stack">
               <a href="https://nkndatamap.nakornnont.go.th/public" target="_blank" rel="noopener" class="cctv-card-link">
                 <div class="cctv-icon-box"><i class="fa-solid fa-camera"></i></div>
@@ -902,6 +950,7 @@
 
   <!-- Scripts -->
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <script src="./js/app.js?v=11"></script>
+  <script src="https://cdn.jsdelivr.net/npm/hls.js@1.5.8/dist/hls.min.js"></script>
+  <script src="./js/app.js?v=12"></script>
 </body>
 </html>
