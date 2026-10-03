@@ -1,5 +1,5 @@
 // HydroBangkok PWA Service Worker
-const CACHE_NAME = 'bkk-flood-cache-v3';
+const CACHE_NAME = 'bkk-flood-cache-v4';
 const STATIC_ASSETS = [
   './',
   './index.html',

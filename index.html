@@ -20,7 +20,7 @@
 
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
-  <link rel="stylesheet" href="./css/style.css?v=14">
+  <link rel="stylesheet" href="./css/style.css?v=15">
 </head>
 <body>
   <!-- Background Glow Accents -->
@@ -259,21 +259,21 @@
           </div>
 
           <!-- Live Embedded Video Player (Nonthaburi Riverfront & Bang Si Mueang Ferry) -->
-          <div class="cctv-live-player-box">
-            <div class="cctv-player-screen" id="mCctvScreen">
-              <video id="mCctvVideo" class="cctv-video-el" playsinline muted controls preload="none"></video>
-              <div class="cctv-overlay" id="mCctvOverlay">
-                <span class="cctv-live-tag"><span class="live-dot-pulse"></span> ภาพสด LIVE 24 ชม.</span>
+          <div class="cctv-live-player-box" style="max-width: 480px; width: 100%; margin: 0 auto; box-sizing: border-box;">
+            <div class="cctv-player-screen" id="mCctvScreen" style="position: relative; width: 100%; aspect-ratio: 16 / 9; max-height: 165px; overflow: hidden; background: #020617;">
+              <video id="mCctvVideo" class="cctv-video-el" playsinline muted controls preload="none" style="width: 100%; height: 100%; object-fit: cover; display: block;"></video>
+              <div class="cctv-overlay" id="mCctvOverlay" style="position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+                <span class="cctv-live-tag"><span class="live-dot-pulse"></span> LIVE 24 ชม.</span>
                 <button type="button" class="btn-play-stream" id="mBtnPlayCctv">
-                  <i class="fa-solid fa-play"></i> แตะเพื่อดูภาพสดริมน้ำ
+                  <i class="fa-solid fa-play"></i> แตะดูภาพสดริมน้ำ
                 </button>
-                <span class="cctv-subnote"><i class="fa-solid fa-location-dot text-cyan"></i> ท่าน้ำนนทบุรี - ท่าข้ามบางศรีเมือง (ตรงข้ามวัดเฉลิมฯ)</span>
+                <span class="cctv-subnote"><i class="fa-solid fa-location-dot text-cyan"></i> ท่าน้ำนนท์ - ท่าข้ามบางศรีเมือง (ตรงข้ามวัดเฉลิมฯ)</span>
               </div>
             </div>
             <div class="cctv-player-bar">
               <div class="cctv-stream-info">
                 <span class="cctv-status-dot online"></span>
-                <span>กล้องเทศบาลนครนนท์ (สัญญาณสด HLS)</span>
+                <span>กล้องสด เทศบาลนครนนทบุรี</span>
               </div>
               <div class="cctv-actions">
                 <button type="button" class="btn-cctv-ctrl" id="mBtnReloadCctv" title="โหลดสัญญาณใหม่">
@@ -824,28 +824,28 @@
             </div>
 
             <!-- Live Pro Embedded Player -->
-            <div class="cctv-live-player-box pro">
-              <div class="cctv-player-screen" id="proCctvScreen">
-                <video id="proCctvVideo" class="cctv-video-el" playsinline muted controls preload="none"></video>
-                <div class="cctv-overlay" id="proCctvOverlay">
-                  <span class="cctv-live-tag"><span class="live-dot-pulse"></span> สตรีมสด LIVE 24 ชม.</span>
+            <div class="cctv-live-player-box pro" style="max-width: 480px; width: 100%; margin: 0 auto 10px auto; box-sizing: border-box;">
+              <div class="cctv-player-screen" id="proCctvScreen" style="position: relative; width: 100%; aspect-ratio: 16 / 9; max-height: 175px; overflow: hidden; background: #020617;">
+                <video id="proCctvVideo" class="cctv-video-el" playsinline muted controls preload="none" style="width: 100%; height: 100%; object-fit: cover; display: block;"></video>
+                <div class="cctv-overlay" id="proCctvOverlay" style="position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+                  <span class="cctv-live-tag"><span class="live-dot-pulse"></span> LIVE 24 ชม.</span>
                   <button type="button" class="btn-play-stream" id="proBtnPlayCctv">
                     <i class="fa-solid fa-play"></i> คลิกเพื่อเริ่มรับชมภาพสด
                   </button>
-                  <span class="cctv-subnote"><i class="fa-solid fa-location-dot text-cyan"></i> ท่าน้ำนนทบุรี - ท่าข้ามบางศรีเมือง (ตรงข้ามวัดเฉลิมฯ)</span>
+                  <span class="cctv-subnote"><i class="fa-solid fa-location-dot text-cyan"></i> ท่าน้ำนนท์ - ท่าข้ามบางศรีเมือง (ตรงข้ามวัดเฉลิมฯ)</span>
                 </div>
               </div>
               <div class="cctv-player-bar">
                 <div class="cctv-stream-info">
                   <span class="cctv-status-dot online"></span>
-                  <span>เทศบาลนครนนทบุรี (H.264 / HLS Stream)</span>
+                  <span>กล้องสด เทศบาลนครนนทบุรี</span>
                 </div>
                 <div class="cctv-actions">
                   <button type="button" class="btn-cctv-ctrl" id="proBtnReloadCctv" title="รีเฟรชสัญญาณ">
                     <i class="fa-solid fa-rotate-right"></i> รีโหลด
                   </button>
                   <a href="https://nkndatamap.nakornnont.go.th/public" target="_blank" rel="noopener" class="cctv-ext-badge" title="เปิดแผนที่เทศบาล">
-                    <i class="fa-solid fa-up-right-from-square"></i> ผังกล้องเทศบาล
+                    <i class="fa-solid fa-up-right-from-square"></i>
                   </a>
                 </div>
               </div>
