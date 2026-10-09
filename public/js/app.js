@@ -1276,8 +1276,8 @@ window.addEventListener('appinstalled', () => {
 // ==========================================
 // LIVE CCTV HLS STREAM PLAYER MODULE
 // ==========================================
-// Official Nonthaburi Municipality Live Stream (ท่าน้ำนนทบุรี - ท่าข้ามฟากบางศรีเมือง ตรงข้ามวัดเฉลิมพระเกียรติฯ)
-const NONTHABURI_CCTV_HLS_URL = 'https://stream.firsttech.co.th/live/nakornnont.stream/index.m3u8';
+// Official Nonthaburi Municipality Live Stream via Cloudflare Worker CORS Proxy
+const NONTHABURI_CCTV_HLS_URL = 'https://cold-truth-d17c.yenkongka.workers.dev/live/nakornnont.stream/index.m3u8';
 
 function initCctvStreams() {
   const setupPlayer = (videoId, overlayId, playBtnId, reloadBtnId) => {
